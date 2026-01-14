@@ -1,0 +1,15 @@
+
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Environment variables (global)
+.env
+.env.*
+
+# Build / cache (generic)
+dist/
+build/
