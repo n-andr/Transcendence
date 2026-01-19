@@ -18,3 +18,4 @@ build/
 **/*.js.*
 **/node_modules
 **/*.d.*
+**/.vscode

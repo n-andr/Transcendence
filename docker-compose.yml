@@ -1,13 +1,7 @@
-version: "3.3"
+#version: "3.3"
 
 #command: overwrites CMD in Dockefiel if necessary
 services:
-  hello:
-    build:
-      context: ./requirements/hello
-      dockerfile: Dockerfile
-    container_name: hello-ts
-    command: npm start
   backend:
     build:
       context: ./requirements/backend
