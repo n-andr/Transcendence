@@ -25,11 +25,9 @@ clean:
 
 fclean: clean
 	@echo "$(GREEN)Removing Docker volumes...$(RESET)"
-	docker compose -f $(DOCKER_COMPOSE_YML) down -v
 	@echo "$(GREEN)Removing all images$(RESET)"
-	docker system prune -af
+	docker compose down --rmi all --volumes --remove-orphans
 	@echo "$(GREEN)Full cleanup done.$(RESET)"
-
 
 home: buildhome uphome
 
@@ -50,10 +48,8 @@ cleanhome:
 fcleanhome: clean
 	@echo "$(GREEN)Removing Docker volumes...$(RESET)"
 	docker-compose -f $(DOCKER_COMPOSE_YML) down -v
-	@echo "$(GREEN)Removing all images$(RESET)"
-	docker system prune -af
-	@echo "$(GREEN)Full cleanup done.$(RESET)"
 
+#docker system prune -af
 #prune -af might be a bad idea outside of a VM...
 
 rehome: fcleanhome home
