@@ -1,5 +1,26 @@
 {
   "dependencies": {
-    "@nestjs/core": "^11.1.11"
-  }
+    "@nestjs/common": "^11.1.12",
+    "@nestjs/core": "^11.1.12",
+    "@nestjs/platform-express": "^11.1.12"
+  },
+  "name": "19_ft_transcendence",
+  "description": "## Description ## Instructions ## Team Information ## Project Management ## Technical Stack ## Database Schema ## Features List ## Modules ## Individual Contributions ## Resources",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/n-andr/Transcendence.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/n-andr/Transcendence/issues"
+  },
+  "homepage": "https://github.com/n-andr/Transcendence#readme"
 }
