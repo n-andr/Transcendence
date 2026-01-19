@@ -13,3 +13,8 @@
 # Build / cache (generic)
 dist/
 build/
+
+**/*.js
+**/*.js.*
+**/node_modules
+**/*.d.*
