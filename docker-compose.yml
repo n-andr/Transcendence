@@ -1,0 +1,42 @@
+#version: "3.3"
+
+#command: overwrites CMD in Dockefiel if necessary
+services:
+  backend:
+    build:
+      context: ./requirements/backend
+      dockerfile: Dockerfile
+    container_name: backend
+    command: node dist/main.js
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+  frontend:
+    build:
+      context: ./requirements/frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./requirements/frontend:/app
+      - node_modules:/app/node_modules
+    command: npm run dev
+  postgres:
+    image: postgres:16-alpine
+    container_name: transcendence-postgres
+    environment:
+      POSTGRES_DB: transcendence
+      POSTGRES_USER: transcendence_user
+      POSTGRES_PASSWORD: transcendence_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+
+
+volumes:
+  postgres_data:
+  node_modules:
