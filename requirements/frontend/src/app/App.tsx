@@ -4,7 +4,6 @@ export default function App() {
       <div className="p-6 rounded-2xl bg-gray-800 shadow">
         <h1 className="text-3xl font-bold">You draw me crazy</h1>
         <p className="mt-2 text-gray-300">App in progress...</p>
-        <p className="mt-2 text-gray-300">Changes for testing...</p>
       </div>
     </main>
   );
