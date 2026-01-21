@@ -1,4 +1,5 @@
 import { Input } from "../components/input.tsx";
+import { Button } from "../components/button.tsx";
 
 export function ComponentSandbox() {
   return (
@@ -24,6 +25,15 @@ export function ComponentSandbox() {
           placeholder="you@example.com"
           error="This email is not valid"
         />
+
+        <Button>
+          Log in
+        </Button>
+
+        <Button variant="secondary">
+          Sign up
+        </Button>
+
       </div>
     </div>
   );
