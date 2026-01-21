@@ -7,11 +7,14 @@ services:
       context: ./requirements/backend
       dockerfile: Dockerfile
     container_name: backend
-    command: node dist/main.js
     ports:
       - "3000:3000"
     depends_on:
       - postgres
+    env_file:
+      - ./requirements/backend/.env
+    environment:
+      DATABASE_URL: "postgresql://transcendence_user:transcendence_pass@postgres:5432/transcendence"
   frontend:
     build:
       context: ./requirements/frontend
@@ -25,7 +28,7 @@ services:
     command: npm run dev
   postgres:
     image: postgres:16-alpine
-    container_name: transcendence-postgres
+    container_name: postgres
     environment:
       POSTGRES_DB: transcendence
       POSTGRES_USER: transcendence_user

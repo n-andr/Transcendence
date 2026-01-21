@@ -10,6 +10,8 @@ COPY package*.json ./
 # 4. Install dependencies
 RUN npm install
 
+RUN npm install --legacy-peer-deps
+
 # 5. Copy the rest of the source code
 COPY . .
 
@@ -19,4 +21,5 @@ RUN npm run build
 # 7. Expose the port Nest listens on (default 3000)
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["sh", "start.sh"]
+#CMD ["node", "dist/main.js"]
