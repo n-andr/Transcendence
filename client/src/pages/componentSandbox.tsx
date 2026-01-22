@@ -6,7 +6,7 @@ export function ComponentSandbox() {
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-sm mx-auto space-y-6">
         <h1 className="text-lg font-semibold">
-          Input component
+          Input Component Tryout Page
         </h1>
 
         <Input
@@ -26,13 +26,10 @@ export function ComponentSandbox() {
           error="This email is not valid"
         />
 
-        <Button>
-          Log in
-        </Button>
-
-        <Button variant="secondary">
-          Sign up
-        </Button>
+        <div className="flex gap-4">
+          <Button>Log in</Button>
+          <Button variant="secondary">Sign up</Button>
+        </div>
 
       </div>
     </div>
