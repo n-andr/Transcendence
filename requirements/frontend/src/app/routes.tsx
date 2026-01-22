@@ -3,11 +3,13 @@ import AppLayout from "../layouts/appLayout";
 import App from "./App";
 import { ComponentSandbox } from "../pages/componentSandbox.tsx";
 //import HomePage from "../pages/homePage";
-import LegalPage from "../pages/static/legalPlaceholder";
+import Terms from "../pages/static/terms";
 //import LoginPage from "../pages/LoginPage";
 //import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/notFoundPage";
 import LoginForm from "../features/auth/loginPage";
+import About from "../pages/static/about.tsx";
+import Privacy from "../pages/static/privacy.tsx"
 
 export const router = createBrowserRouter(
 	[
@@ -26,11 +28,15 @@ export const router = createBrowserRouter(
 				},
 				{
 					path: "/privacy",
-					element: <LegalPage />,
+					element: <Privacy />,
+				},
+				{
+					path: "/about", 
+					element: <About />,
 				},
 				{
 					path: "/terms",
-					element: <LegalPage />,
+					element: <Terms />,
 				},
 				{
 					path: "/login",
