@@ -7,6 +7,7 @@ import LegalPage from "../pages/static/legalPlaceholder";
 //import LoginPage from "../pages/LoginPage";
 //import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/notFoundPage";
+import LoginForm from "../features/auth/loginPage";
 
 export const router = createBrowserRouter(
 	[
@@ -30,6 +31,10 @@ export const router = createBrowserRouter(
 				{
 					path: "/terms",
 					element: <LegalPage />,
+				},
+				{
+					path: "/login",
+					element: <LoginForm />,
 				},
 				{
 					path: "*",
