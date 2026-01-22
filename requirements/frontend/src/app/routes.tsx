@@ -4,10 +4,10 @@ import App from "./App";
 import { ComponentSandbox } from "../pages/componentSandbox.tsx";
 //import HomePage from "../pages/homePage";
 import Terms from "../pages/static/terms";
-//import LoginPage from "../pages/LoginPage";
+import LoginPage from "../features/auth/loginPage.tsx";
 //import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/notFoundPage";
-import LoginForm from "../features/auth/loginPage";
+import FirstPage from "../pages/firstPage.tsx";
 import About from "../pages/static/about.tsx";
 import Privacy from "../pages/static/privacy.tsx"
 
@@ -39,8 +39,12 @@ export const router = createBrowserRouter(
 					element: <Terms />,
 				},
 				{
+					path: "/register",
+					element: <FirstPage />
+				},
+				{
 					path: "/login",
-					element: <LoginForm />,
+					element: <LoginPage />
 				},
 				{
 					path: "*",
