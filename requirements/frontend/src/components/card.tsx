@@ -11,7 +11,6 @@ export function Card({ children, className, ...props }: CardProps) {
         bg-white
         p-12
         rounded-xl
-        shadow-sm
         ${className || ""}
       `}
       {...props}
