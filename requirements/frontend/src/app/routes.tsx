@@ -1,4 +1,4 @@
-import { createBrowserRouter, Route } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../layouts/appLayout";
 import AuthLayout from "../layouts/authLayout.tsx";
 import App from "./App";
@@ -8,7 +8,6 @@ import Terms from "../pages/static/terms";
 import LoginPage from "../features/auth/loginPage.tsx";
 //import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/notFoundPage";
-import FirstPage from "../pages/firstPage.tsx";
 import About from "../pages/static/about.tsx";
 import Privacy from "../pages/static/privacy.tsx";
 import WelcomePage from "../pages/welcomePage.tsx";
@@ -57,10 +56,10 @@ export const router = createBrowserRouter(
 					path: "/login",
 					element: <LoginPage />
 				},
-				{
-					path: "/register",
-					element: <FirstPage />
-				},
+				// {
+				//	path: "/register",
+				//	element: <RegisterPage />
+				// },
 				{
 					path: "*",
 					element: <NotFoundPage />,

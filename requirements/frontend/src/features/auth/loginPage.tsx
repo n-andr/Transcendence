@@ -2,6 +2,7 @@ import { useState } from "react";
 import { login } from "../../api/auth";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
+import { Card } from "../../components/card";
 
 
 //not a working feature 
@@ -29,31 +30,32 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit}>
-      <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-sm mx-auto space-y-6">
-        <label className="text-sm font-medium">Email</label>
-          <Input
-            type="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+    <Card>
+      <form onSubmit={onSubmit} className="w-full">
+        <div className="flex flex-col gap-4 w-full max-w-xs mx-auto">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Email</label>
+            <Input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-          <label className="text-sm font-medium">Password</label>
-          <Input
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Password</label>
+            <Input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-          <Button type="submit">
-            Log in
-          </Button>
-      </div>
-      </div>
-
-    </form>
+          <Button type="submit" className="w-full">Log in</Button>
+        </div>
+      </form>
+    </Card>
   );
 }
