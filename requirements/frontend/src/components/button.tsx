@@ -1,15 +1,14 @@
-type ButtonProps = {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   children: React.ReactNode;
   variant?: "primary" | "secondary";
-  disabled?: boolean;
-  onClick?: () => void;
 };
 
 export function Button({
   children,
   variant = "primary",
   disabled = false,
-  onClick,
+  className,
+  ...props
 }: ButtonProps) {
   const base =
     "inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2";
@@ -26,13 +25,14 @@ export function Button({
 
   return (
     <button
-      onClick={onClick}
       disabled={disabled}
       className={`
         ${base}
         ${variants[variant]}
         ${disabled ? disabledStyles : ""}
+        ${className || ""}
       `}
+      {...props}
     >
       {children}
     </button>

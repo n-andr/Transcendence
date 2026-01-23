@@ -1,5 +1,3 @@
-// review this: what does ReactNode do?
-
 import type { ReactNode } from 'react';
 
 interface AuthLayoutProps {
