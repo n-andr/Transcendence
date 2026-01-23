@@ -7,7 +7,7 @@ export default function FirstPage() {
   return (
  	<AuthLayout>
 		<Card>
- 		<div className="flex flex-col items-center gap-6">
+ 		<div className="flex flex-col items-center gap-8">
 			<Logo />
     		<AuthActions />
   		</div>

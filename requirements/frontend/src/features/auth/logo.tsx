@@ -1,5 +1,11 @@
+import logo from "../../assets/logo2.png";
+
 export default function Logo() {
   return (
-    <div className="w-20 h-20 bg-gray-200 rounded-md" />
+   <img
+      src={logo}
+      alt="You Draw Me Crazy logo"
+      className="h-88 w-auto rounded-2xl"
+    />
   )
 }

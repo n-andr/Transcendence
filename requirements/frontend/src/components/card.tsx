@@ -7,9 +7,9 @@ export function Card({ children, className, ...props }: CardProps) {
     <div
       className={`
         w-full
-        max-w-sm
+        max-w-lg
         bg-white
-        p-6
+        p-12
         rounded-xl
         shadow-sm
         ${className || ""}
