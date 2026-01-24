@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { login } from "../../api/auth";
+import { Input } from "../../components/input";
+import { Button } from "../../components/button";
 
 
 //not a working feature 
-
 
 /*
 
@@ -29,20 +30,30 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={onSubmit}>
-      <input
-        placeholder="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-sm mx-auto space-y-6">
+        <label className="text-sm font-medium">Email</label>
+          <Input
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <input
-        placeholder="password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+          <label className="text-sm font-medium">Password</label>
+          <Input
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-      <button type="submit">Login</button>
+          <Button type="submit">
+            Log in
+          </Button>
+      </div>
+      </div>
+
     </form>
   );
 }

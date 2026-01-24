@@ -1,12 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../layouts/appLayout";
-
-import HomePage from "../pages/homePage";
-import LegalPage from "../pages/static/legalPlaceholder";
-//import LoginPage from "../pages/LoginPage";
+import App from "./App";
+import { ComponentSandbox } from "../pages/componentSandbox.tsx";
+//import HomePage from "../pages/homePage";
+import Terms from "../pages/static/terms";
+import LoginPage from "../features/auth/loginPage.tsx";
 //import RegisterPage from "../pages/RegisterPage";
 import NotFoundPage from "../pages/notFoundPage";
-import LoginForm from "../features/auth/loginPage";
+import FirstPage from "../pages/firstPage.tsx";
+import About from "../pages/static/about.tsx";
+import Privacy from "../pages/static/privacy.tsx"
 
 export const router = createBrowserRouter(
 	[
@@ -15,19 +18,33 @@ export const router = createBrowserRouter(
 			children: [
 				{
 					path: "/",
-					element: <HomePage />,
+					element: <App />,
+					children: [
+					{
+						index: true,
+						element: <ComponentSandbox />,
+					},
+					],
 				},
 				{
 					path: "/privacy",
-					element: <LegalPage />,
+					element: <Privacy />,
+				},
+				{
+					path: "/about", 
+					element: <About />,
 				},
 				{
 					path: "/terms",
-					element: <LegalPage />,
+					element: <Terms />,
+				},
+				{
+					path: "/register",
+					element: <FirstPage />
 				},
 				{
 					path: "/login",
-					element: <LoginForm />,
+					element: <LoginPage />
 				},
 				{
 					path: "*",
