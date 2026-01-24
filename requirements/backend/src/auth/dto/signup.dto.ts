@@ -1,34 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   auth.controller.ts                                 :+:      :+:    :+:   */
+/*   signup.dto.ts                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/24 18:54:09 by nboer             #+#    #+#             */
-/*   Updated: 2026/01/24 20:13:07 by nboer            ###   ########.fr       */
+/*   Created: 2026/01/24 18:54:22 by nboer             #+#    #+#             */
+/*   Updated: 2026/01/24 19:34:58 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Body, Controller, Get, Post } from '@nestjs/common'
-import { SignupDto } from './dto/signup.dto';
+import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator';
 
-@Controller('auth')
-export class AuthController {
+export class SignupDto {
+	@IsEmail()
+	email: string;
 
-	@Get()
-	getAuth() {
-		return 'Auth';
-	}
+	@IsString()
+	@MinLength(8)
+	password: string;
 
-	@Post('signup')
-	signup(@Body() dto: SignupDto) {
-		
-		return 'Signup endpoint';
-	}
-
-	@Post('login')
-	login() {
-		return 'Login endpoint';
-}
+	@IsString()
+	@MinLength(2)
+	@MaxLength(20)
+	username: string;
 }

@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   app.module.ts                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lde-taey <lde-taey@student.42berlin.de>    +#+  +:+       +#+        */
+/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/14 16:17:58 by lde-taey          #+#    #+#             */
-/*   Updated: 2026/01/14 16:18:06 by lde-taey         ###   ########.fr       */
+/*   Updated: 2026/01/24 19:00:29 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Module } from '@nestjs/common'
+import { Module } from '@nestjs/common';
+import { AuthController } from './auth/auth.controller';
+
 
 @Module
 ({
@@ -21,5 +23,7 @@ import { Module } from '@nestjs/common'
     //UsersModule,
     //GameModule,
   ],
+  controllers: [AuthController]
+
 })
 export class AppModule {}
