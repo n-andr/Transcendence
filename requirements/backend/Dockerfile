@@ -13,10 +13,13 @@ RUN npm install
 # 5. Copy the rest of the source code
 COPY . .
 
+#generate prisma client
+RUN npx prisma generate
+
 # 6. Compile TypeScript to JavaScript
 #RUN npm run build
 
 # 7. Expose the port Nest listens on (default 3000)
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["/app/start.sh"]
