@@ -18,5 +18,6 @@ async function bootstrap()
   const app = await NestFactory.create(AppModule);
   await app.listen(3000); // 3000 is the port
   console.log('Server is running on http://localhost:3000');
+  console.log('Testing changes');
 }
 bootstrap();
