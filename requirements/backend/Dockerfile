@@ -14,9 +14,9 @@ RUN npm install
 COPY . .
 
 # 6. Compile TypeScript to JavaScript
-RUN npm run build
+#RUN npm run build
 
 # 7. Expose the port Nest listens on (default 3000)
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:dev"]
