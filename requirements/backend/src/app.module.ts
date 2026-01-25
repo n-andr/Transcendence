@@ -6,23 +6,23 @@
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/14 16:17:58 by lde-taey          #+#    #+#             */
-/*   Updated: 2026/01/24 19:00:29 by nboer            ###   ########.fr       */
+/*   Updated: 2026/01/25 17:22:13 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module
 ({
-  imports: [
+  imports: [AuthModule],
     //ConfigModule,//would need to be installe seperately
     //DatabaseModule,
     //AuthModule,
     //UsersModule,
     //GameModule,
-  ],
   controllers: [AuthController]
 
 })
