@@ -5,7 +5,7 @@ import { ComponentSandbox } from "../pages/componentSandbox.tsx";
 //import HomePage from "../pages/homePage";
 import Terms from "../pages/static/terms";
 import LoginPage from "../features/auth/loginPage.tsx";
-//import RegisterPage from "../pages/RegisterPage";
+import RegistrationPage from "../features/auth/registrationPage.tsx";
 import NotFoundPage from "../pages/notFoundPage";
 import FirstPage from "../pages/firstPage.tsx";
 import About from "../pages/static/about.tsx";
@@ -16,16 +16,16 @@ export const router = createBrowserRouter(
 		{
 			element: <AppLayout/>, //layout that wraps all child routes (will add header and footer) and render content into Outlet
 			children: [
-				{
-					path: "/",
-					element: <App />,
-					children: [
-					{
-						index: true,
-						element: <ComponentSandbox />,
-					},
-					],
-				},
+				// {
+				// 	path: "/",
+				// 	element: <App />,
+				// 	children: [
+				// 	{
+				// 		index: true,
+				// 		element: <ComponentSandbox />,
+				// 	},
+				// 	],
+				// },
 				{
 					path: "/privacy",
 					element: <Privacy />,
@@ -40,7 +40,7 @@ export const router = createBrowserRouter(
 				},
 				{
 					path: "/register",
-					element: <FirstPage />
+					element: <RegistrationPage />
 				},
 				{
 					path: "/login",
@@ -54,9 +54,9 @@ export const router = createBrowserRouter(
 		},
 
 		//any page in this section will not get wraped by  AppLayout
-		// {
-		// 	path: "*",
-		// 	element: <NotFoundPage />,
-  		// },
+		{
+			path: "/",
+			element: <FirstPage />,
+  		},
 	]
 )
