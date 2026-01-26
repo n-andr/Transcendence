@@ -46,6 +46,7 @@ export default function LoginForm() {
       console.log("SERVER RESPONSE:", result); //delete
       // step 3 later: save auth + navigate("/game")
     } catch (err) {
+		console.log(err);
       const message =
         err instanceof Error ? err.message : "Login failed. Please try again.";
       setFormError(message);
