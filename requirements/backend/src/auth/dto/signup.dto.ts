@@ -1,29 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   app.module.ts                                      :+:      :+:    :+:   */
+/*   signup.dto.ts                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/14 16:17:58 by lde-taey          #+#    #+#             */
-/*   Updated: 2026/01/25 17:22:13 by nboer            ###   ########.fr       */
+/*   Created: 2026/01/24 18:54:22 by nboer             #+#    #+#             */
+/*   Updated: 2026/01/24 19:34:58 by nboer            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Module } from '@nestjs/common';
-import { AuthController } from './auth/auth.controller';
-import { AuthModule } from './auth/auth.module';
+import { IsEmail, IsString, MinLength, MaxLength } from 'class-validator';
 
+export class SignupDto {
+	@IsEmail()
+	email: string;
 
-@Module
-({
-  imports: [AuthModule],
-    //ConfigModule,//would need to be installe seperately
-    //DatabaseModule,
-    //AuthModule,
-    //UsersModule,
-    //GameModule,
-  controllers: [AuthController]
+	@IsString()
+	@MinLength(8)
+	password: string;
 
-})
-export class AppModule {}
+	@IsString()
+	@MinLength(2)
+	@MaxLength(20)
+	username: string;
+}
