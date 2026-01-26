@@ -24,7 +24,8 @@ export default function LoginForm() {
 
   const canSubmit = useMemo(()=> {
 	return validateEmail(email) === "" && validatePassword(password) === "";
-  },  [email], [password]);
+  },  [email, password]);
+  
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -90,6 +91,9 @@ export default function LoginForm() {
 		  >
             {isSubmitting ? "Logging in..." : "Log in"}
           </Button> 
+		  {formError && (
+			<p className="text-sm text-red-600">{formError}</p>
+			)}
       </div>
       </div>
 
