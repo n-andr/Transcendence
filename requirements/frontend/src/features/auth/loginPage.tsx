@@ -3,7 +3,8 @@ import { login } from "../../api/auth";
 import { Input } from "../../components/input";
 import { Button } from "../../components/button";
 import { validateEmail, validatePassword } from "./inputValidators";
-
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 /*
 
 Valid email: has min 1 alfanumericl char, then @, then min 1 alfanumericl char then . then min 1 alfanumericl char
@@ -25,6 +26,8 @@ export default function LoginForm() {
   const canSubmit = useMemo(()=> {
 	return validateEmail(email) === "" && validatePassword(password) === "";
   },  [email, password]);
+  const navigate = useNavigate();
+const { setLoggedIn } = useAuth();
   
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,6 +48,9 @@ export default function LoginForm() {
       const result = await login({ email, password });
       console.log("SERVER RESPONSE:", result); //delete
       // step 3 later: save auth + navigate("/game")
+	  setLoggedIn({ email: email.trim() });
+	  
+  		navigate("/game");
     } catch (err) {
 		console.log(err);
       const message =

@@ -12,9 +12,9 @@ Valid email: has min 1 alfanumericl char, then @, then min 1 alfanumericl char t
 */
 
 
-export default function RegistrationForm() {
+export default function SignUpForm() {
  
   return (
-	<p> WIP Registration</p>
+	<p> WIP SignUp</p>
   );
 }
