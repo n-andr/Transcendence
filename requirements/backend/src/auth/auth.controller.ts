@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   auth.controller.ts                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: nboer <nboer@student.42.fr>                +#+  +:+       +#+        */
+/*   By: nandreev <nandreev@student.42berlin.de>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/24 18:54:09 by nboer             #+#    #+#             */
-/*   Updated: 2026/01/25 16:04:59 by nboer            ###   ########.fr       */
+/*   Updated: 2026/01/26 22:46:39 by nandreev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,6 @@ export class AuthController {
 	@Post('login')
 	async login(@Body() dto: LoginDto) {
 		console.log(dto); // for debugging "docker logs backend"
-		return this.authService.login(dto.username, dto.password);
+		return this.authService.login(dto.email, dto.password);
 }
 }
