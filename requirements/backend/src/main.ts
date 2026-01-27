@@ -21,5 +21,6 @@ async function bootstrap()
   app.useGlobalPipes(new ValidationPipe()); // NB: dto validation only works if enabled.
   await app.listen(3000); // 3000 is the port
   console.log('Server is running on http://localhost:3000');
+  console.log('Testing changes');
 }
 bootstrap();
