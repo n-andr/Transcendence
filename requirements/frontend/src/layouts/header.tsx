@@ -4,6 +4,7 @@ to be changed and styled later with custom components
 */
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
+import icon from "../assets/icon2.png";
 
 export default function Header() {
   const { auth, logout } = useAuth();
@@ -19,8 +20,9 @@ export default function Header() {
       <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
         {/* Logo / Brand */}
         <div className="flex items-center gap-2">
+          <img src={icon} alt="icon" className="h-5 w-auto" />
           <span className="text-lg font-semibold text-gray-900">
-            You draw me crazy
+            You Draw Me Crazy
           </span>
         </div>
 

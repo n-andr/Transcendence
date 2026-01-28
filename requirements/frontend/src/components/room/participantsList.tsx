@@ -1,10 +1,12 @@
+import Clock from "./clock";
+
 export default function ParticipantsList() {
   // Mock participants data
   const participants = [
-    { id: "1", name: "Alice", score: 250, role: "drawer", status: "connected" },
-    { id: "2", name: "Bob", score: 180, role: "guesser", status: "connected" },
-    { id: "3", name: "Charlie", score: 150, role: "guesser", status: "disconnected" },
-    { id: "4", name: "Diana", score: 200, role: "guesser", status: "connected" },
+    { id: "1", name: "Natalya", score: 250, role: "drawer", status: "connected" },
+    { id: "2", name: "Steph", score: 180, role: "guesser", status: "connected" },
+    { id: "3", name: "Marc", score: 150, role: "guesser", status: "disconnected" },
+    { id: "4", name: "Nick", score: 200, role: "guesser", status: "connected" },
   ];
 
   return (
@@ -32,6 +34,11 @@ export default function ParticipantsList() {
             </div>
           </div>
         ))}
+      </div>
+      
+      {/* Clock below participants */}
+      <div className="mt-6 pt-4 border-t flex justify-center">
+        <Clock />
       </div>
     </div>
   );

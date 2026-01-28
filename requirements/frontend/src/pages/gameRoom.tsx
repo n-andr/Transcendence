@@ -3,7 +3,6 @@ import { RoomProvider } from "../features/room/roomProvider";
 import DrawingBoard from "../components/room/drawingBoard";
 import ParticipantsList from "../components/room/participantsList";
 import PromptBox from "../components/room/promptBox";
-import Clock from "../components/room/clock";
 
 export default function GamePage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -18,18 +17,8 @@ export default function GamePage() {
 
   return (
     <RoomProvider roomId={roomId}>
-      <div className="min-h-screen bg-gray-50 p-4">
+      <div className="bg-gray-50 p-4 min-h-full">
         <div className="max-w-7xl mx-auto">
-          {/* Prompt and timer in one row */}
-          <div className="flex gap-4 mb-4">
-            <div className="flex-1 max-w-sm">
-              <PromptBox />
-            </div>
-            <div className="flex items-center">
-              <Clock />
-            </div>
-          </div>
-
           {/* Main game area */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
             {/* Left sidebar - Participants */}
@@ -37,8 +26,13 @@ export default function GamePage() {
               <ParticipantsList />
             </div>
 
-            {/* Center - Drawing board */}
-            <div className="lg:col-span-3">
+            {/* Center - Drawing board with overlaid prompt and clock */}
+            <div className="lg:col-span-3 relative flex flex-col max-h-[calc(100vh-200px)]">
+              {/* Prompt overlaid on top */}
+              <div className="absolute top-8 left-8 z-10 max-w-sm">
+                <PromptBox />
+              </div>
+              
               <DrawingBoard />
             </div>
           </div>

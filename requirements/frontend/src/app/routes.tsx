@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import AppLayout from "../layouts/appLayout";
 import App from "./App";
 import { ComponentSandbox } from "../pages/componentSandbox.tsx";
-import LobbyPage from "../pages/lobbyPage.tsx";
+import HomePage from "../pages/homePage.tsx";
 import Terms from "../pages/static/terms";
 import LoginPage from "../features/auth/loginPage.tsx";
 import SignUpPage from "../features/auth/signUpPage.tsx";
@@ -19,7 +19,7 @@ export const router = createBrowserRouter(
 			children: [
 				{
 					path: "/play",
-					element: <LobbyPage />,
+					element: <HomePage />,
 				},
 				{
 					path: "/privacy",
