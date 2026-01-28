@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../features/auth/AuthContext";
 import { Button } from "../components/button";
 
-export default function HomePage() {
+export default function LobbyPage() {
   const navigate = useNavigate();
   const { auth } = useAuth();
 
@@ -30,4 +30,4 @@ export default function HomePage() {
       </Button>
     </div>
   );
-}}
+}
