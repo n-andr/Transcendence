@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 import { Module } from '@nestjs/common';
+import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 
@@ -21,7 +22,7 @@ import { AuthModule } from './auth/auth.module';
     //ConfigModule,//would need to be installe seperately
     //DatabaseModule,
     //AuthModule,
-    //UsersModule,
+    UsersModule,
     //GameModule,
   controllers: [AuthController]
 
