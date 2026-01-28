@@ -5,30 +5,35 @@ import { ComponentSandbox } from "../pages/componentSandbox.tsx";
 //import HomePage from "../pages/homePage";
 import Terms from "../pages/static/terms";
 import LoginPage from "../features/auth/loginPage.tsx";
-//import RegisterPage from "../pages/RegisterPage";
+import SignUpPage from "../features/auth/signUpPage.tsx";
 import NotFoundPage from "../pages/notFoundPage";
 import FirstPage from "../pages/firstPage.tsx";
 import About from "../pages/static/about.tsx";
 import Privacy from "../pages/static/privacy.tsx"
+import Game from "../pages/gameRoom.tsx";
 
 export const router = createBrowserRouter(
 	[
 		{
 			element: <AppLayout/>, //layout that wraps all child routes (will add header and footer) and render content into Outlet
 			children: [
-				{
-					path: "/",
-					element: <App />,
-					children: [
-					{
-						index: true,
-						element: <ComponentSandbox />,
-					},
-					],
-				},
+				// {
+				// 	path: "/",
+				// 	element: <App />,
+				// 	children: [
+				// 	{
+				// 		index: true,
+				// 		element: <ComponentSandbox />,
+				// 	},
+				// 	],
+				// },
 				{
 					path: "/privacy",
 					element: <Privacy />,
+				},
+				{
+					path: "/game",
+					element: <Game />,
 				},
 				{
 					path: "/about", 
@@ -39,8 +44,8 @@ export const router = createBrowserRouter(
 					element: <Terms />,
 				},
 				{
-					path: "/register",
-					element: <FirstPage />
+					path: "/sign-up",
+					element: <SignUpPage />
 				},
 				{
 					path: "/login",
@@ -54,9 +59,9 @@ export const router = createBrowserRouter(
 		},
 
 		//any page in this section will not get wraped by  AppLayout
-		// {
-		// 	path: "*",
-		// 	element: <NotFoundPage />,
-  		// },
+		{
+			path: "/",
+			element: <FirstPage />,
+  		},
 	]
 )

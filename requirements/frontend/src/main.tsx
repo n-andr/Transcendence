@@ -3,6 +3,7 @@ import React from 'react'
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from 'react-router-dom'
 import { router } from './app/routes.tsx'
+import { AuthProvider } from './features/auth/AuthContext.tsx'; //to track if user is loged in
 //import { createRoot } from 'react-dom/client'
 import './index.css'
 //import App from './app/App.tsx'
@@ -15,6 +16,9 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+	<AuthProvider>
+		 <RouterProvider router={router} />
+	</AuthProvider>
+   
   </React.StrictMode>
 );
