@@ -29,7 +29,7 @@ export default function Header() {
           <Link to="/" className="hover:text-gray-900 transition-colors">
             Home
           </Link>
-          <Link to="/game" className="hover:text-gray-900 transition-colors">
+          <Link to="/play" className="hover:text-gray-900 transition-colors">
             Play
           </Link>
           <Link to="/about" className="hover:text-gray-900 transition-colors">
