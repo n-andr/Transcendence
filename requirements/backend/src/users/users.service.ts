@@ -8,19 +8,25 @@ export class UsersService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	createUser(nickname: string, email: string, password: string): Promise<User> {
-		console.log(`I would be creating a user: ${nickname}, ${email}`);
+		console.log(`I am creating a user: ${nickname}, ${email}`);
 		//call database
 		//return {nickname, email, password };
 		return this.prisma.user.create({
 			data: { nickname, email, password },
 		});
 	}
-	getUser(nickname: string): Promise<User | null> {
-		console.log(`I would be fetching User data for: ${nickname}`);
+	getUser(email: string): Promise<User | null> {
+		console.log(`I am fetching User data by email: ${email}`);
 		//call database
 		//return {nickname, email: 'Dummy@example.com', password: 'secret' };
 		return this.prisma.user.findUnique({
-			where: { nickname },
+			where: { email },
+		});
+	}
+	getUserById(id: number) {
+		console.log(`I am fetching User data by ID: ${id}`);
+		return this.prisma.user.findUnique({
+			where: { id },
 		});
 	}
 }

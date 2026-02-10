@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Comfortaa', 'system-ui', 'sans-serif'],
+      },
       colors: {
         primary: "#5B6CFF",
         primaryForeground: "#FFFFFF",

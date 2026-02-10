@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, ParseIntPipe } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { DatabaseService } from "../database/database.service";
 
@@ -17,18 +17,15 @@ export class UsersController {
 	) {
 		return this.usersService.createUser(nickname, email, password);
 	}
-
-	@Get('test-db')
-	async testDb() {
-	const result = await this.databaseService.query('SELECT 1+1 AS sum');
-	console.log(result.rows);
-	return result.rows;
-	}
 	
-	@Get(':nickname')
-	getUser(@Param('nickname') nickname: string) {
-		return this.usersService.getUser(nickname);
+	@Get('email/:email')
+	getUser(@Param('email') email: string) {
+		return this.usersService.getUser(email);
 	}
 
+	@Get('id/:id')
+	getUserById(@Param('id', ParseIntPipe) id: number) {
+		return this.usersService.getUserById(id);
+	}
 	
 }

@@ -14,17 +14,24 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
-
+import { UsersController } from './users/users.controller';
+import { DatabaseModule } from './database/database.module';
+import { WebsocketModule } from './websocket/websocket.module';
+import { TmpModule } from './tmp/tp.module';
 
 @Module
 ({
-  imports: [AuthModule],
+  imports: [AuthModule,
+	UsersModule,
+	DatabaseModule,
+	WebsocketModule,
+	TmpModule],
     //ConfigModule,//would need to be installe seperately
     //DatabaseModule,
     //AuthModule,
-    UsersModule,
+    //UsersModule,
     //GameModule,
-  controllers: [AuthController]
+  controllers: [AuthController, UsersController]
 
 })
 export class AppModule {}

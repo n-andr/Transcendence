@@ -3,7 +3,7 @@ import AuthActions from "../features/auth/authActions.tsx"
 import Logo from "../features/auth/logo.tsx"
 import { Card } from "../components/card.tsx";
 
-export default function FirstPage() {
+export default function WelcomePage() {
   return (
  	<AuthLayout>
 		<Card>

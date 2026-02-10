@@ -7,7 +7,7 @@
 *.log
 
 # Environment variables (global)
-.env
+#.env
 .env.*
 
 # Build / cache (generic)
