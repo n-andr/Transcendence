@@ -36,7 +36,7 @@ export class WebsocketGateway {
 	}
 
 	//events from here on downwards
-	@SubscribeMessage('identify')
+	@SubscribeMessage('identify') //play
 	handleIdentify(
 		@MessageBody() data: { userId: number },
 		@ConnectedSocket() socket: Socket,
@@ -45,7 +45,7 @@ export class WebsocketGateway {
 		clearTimeout(socket.data.identifyTimer);
 		this.registry.addConnection(data.userId, socket);
 		console.log(`Socket ${socket.id} identified as user ${data.userId}`);
-		socket.emit('identified');
+		socket.emit('identified'); // roomstate
 		this.registry.printRegistry();
 	}
 	
