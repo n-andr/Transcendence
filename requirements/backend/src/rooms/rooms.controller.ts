@@ -10,25 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* 
-Handle JoinRoom(number playerid, number roomid)
-	receives player ID that wants to join from the client
-		-> if (!playerID)
-			-> error;
-	room ID to join
-		-> if player ID is not in room ID
-			-> error;
-		--> if n_players > max_player
-			--> error;
-		--> if player is already in room;
-			--> error;
-	if (!drawing)
-		-> do not return the currentWord
-	returns the updated room that was joined (so frontend sees the new player in the list)
+import { Controller } from "@nestjs/common";
 
-Handle LeaveRoom(number playerid, number roomid)
-	/ receives player ID that wants to leave from the client
-	// the updated room, so the frontend sees that the player left.
+@Controller('Rooms')
+export class RoomsController {
+	// GET /rooms
+	// Get /rooms/:id
+	// POST /rooms
+	// PATCH /users/:id
 
-// Delete room and create room are handled by the server therefore not in room.controller
-*/
+	// POST
+}
+
+
