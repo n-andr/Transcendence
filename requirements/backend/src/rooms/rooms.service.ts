@@ -4,7 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { Participant } from "../../../shared/room.types";
 
 @Injectable()
-export class RoomService {
+export class RoomsService {
     private rooms = new Map<number, Room>()
 	private userToRoom = new Map<number, number>()
 
