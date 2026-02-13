@@ -14,6 +14,15 @@ build:
 	@echo "$(DOCKER_COMPOSE_YML)"
 	docker compose -f $(DOCKER_COMPOSE_YML) build
 
+rebuild:
+	@echo "$(GREEN)Rebuilding without cache...$(RESET)"
+	docker compose -f $(DOCKER_COMPOSE_YML) down --volumes --remove-orphans
+	docker volume rm transcendence_backend_node_modules 2>/dev/null || true
+	docker volume rm transcendence_node_modules 2>/dev/null || true
+	docker compose -f $(DOCKER_COMPOSE_YML) build --no-cache
+	docker compose -f $(DOCKER_COMPOSE_YML) up -d
+	@echo "$(GREEN)Rebuild complete.$(RESET)"
+
 up:
 	@echo "$(GREEN)Starting containres in detached mode...$(RESET)"
 	docker compose -f $(DOCKER_COMPOSE_YML) up -d
@@ -56,4 +65,5 @@ rehome: fcleanhome home
 
 re: fclean all
 
-.PHONY: all build up clean fclean re buildhome build uphome cleanhome fcleanhome rehome
+.PHONY: all build up clean fclean re buildhome build uphome cleanhome fcleanhome rehome rebuild
+
