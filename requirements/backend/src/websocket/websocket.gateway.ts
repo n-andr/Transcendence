@@ -14,7 +14,7 @@ import { RoomsService } from 'src/rooms/rooms.service';
 export class WebsocketGateway {
 	constructor( 
 		private readonly registry: ConnectionRegistry,
-		private readonly RoomsService: RoomsService
+		private readonly roomsService: RoomsService
 	) {}
 	afterInit() { console.log('WebSocket Gateway initialized') }
 
@@ -81,7 +81,7 @@ export class WebsocketGateway {
 		const { roomId, name } = data;
 
 		// call the RoomsService :)
-		const room = this.RoomsService.joinRoom(roomId, userId, name);
+		const room = this.roomsService.joinRoom(roomId, userId, name);
 
 		// setup a new roomstate
 		const roomState = {
