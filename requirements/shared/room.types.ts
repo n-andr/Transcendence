@@ -16,7 +16,7 @@ export interface Prompt {
 }
 
 export interface Participant {
-  id: string;
+  id: number;
   name: string;
   avatarUrl?: string;
 
@@ -27,7 +27,7 @@ export interface Participant {
 }
 
 export interface RoomState {
-  roomId: string;
+  roomId: number;
 
   phase: RoomPhase;
   round: number;
