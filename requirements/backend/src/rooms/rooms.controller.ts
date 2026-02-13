@@ -10,16 +10,30 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Controller } from "@nestjs/common";
+import { Controller, Get, Param, Post, Body } from "@nestjs/common";
+import { RoomService } from "./rooms.service";
 
-@Controller('Rooms')
+
+@Controller('rooms')
 export class RoomsController {
-	// GET /rooms
-	// Get /rooms/:id
-	// POST /rooms
-	// PATCH /users/:id
+	constructor(private readonly RoomService: RoomService) {}
 
-	// POST
+	@Get()
+	getAllRooms() {
+		return this.RoomService.getAllRooms()
+	}
+
+	@Get(':id')
+	getRoom(@Param('id') id: number) {
+		return this.RoomService.getRoom(id)
+	}
+
+	@Post(':room')
+	createRoom (@Body() data : { roomId: number; maxPlayers: number }) {
+		return this.RoomService.createRoom(data.roomId, data.maxPlayers)
+	}
+
+
 }
 
 

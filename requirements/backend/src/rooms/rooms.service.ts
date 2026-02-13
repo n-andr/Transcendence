@@ -1,37 +1,57 @@
 import { map } from "rxjs"
 import { Room } from "./room.class"
+import { Injectable } from "@nestjs/common";
+import { Participant } from "../../../shared/room.types";
 
+@Injectable()
 export class RoomService {
-    private rooms = new Map<string, Room>();
+    private rooms = new Map<number, Room>()
+	private userToRoom = new Map<number, number>()
 
-    getRoom(roomId: string) {
+	// methods below
+    getRoom(roomId: number) {
         return this.rooms.get(roomId)
     }
 
-    createRoom(roomId: string, maxPlayers: number) {
-        return new Room(roomId, maxPlayers);
+	// for lobby functionality
+	getAllRooms(): Room[] {
+		return [...this.rooms.values()]
+	}
+
+    createRoom(roomId: number, maxPlayers: number): Room {
+        const room = new Room(roomId, maxPlayers);
+		this.rooms.set(roomId, room)
+		return room;
     }
+
+	joinRoom(roomId: number, playerId: number, name: string): Room {
+		const room = this.rooms.get(roomId)
+
+		if (!room)
+			throw new Error("Room not found")
+		if (this.userToRoom.has(playerId)) // can immediately acces the right room without searching
+			throw new Error("User already in room")
+		
+		
+		const participant: Participant = {
+				id: playerId,
+				name: name,
+				score: 0,
+				role: "drawer",
+				status: "connected",
+			};
+
+		//add player to Room class
+		room.addParticipant(participant)
+
+		// save user in usertoRoom map
+		this.userToRoom.set(playerId, roomId)
+
+		return room;
+	}
+
 }
-
-
-// addParticipant(userId: string) --> CLASS METHOD
 
 // removeParticipant(userId: string, roomId: string) --> CLASS METHOD
 	// receives player ID that wants to leave from the client
 	// the updated room, so the frontend sees that the player left.
-
-/* 
-AddParticipant(number playerid, number roomid)
-	receives player ID that wants to join from the client
-		-> if (!playerID)
-			-> error;
-	room ID to join
-		-> if player ID is not in room ID
-			-> error;
-		--> if n_players > max_player
-			--> error;
-		--> if player is already in room;
-			--> error;
-	if (!drawing)
-		-> do not return the currentWord
-	returns the updated room that was joined (so frontend sees the new player in the list)

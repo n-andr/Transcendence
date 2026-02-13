@@ -1,26 +1,38 @@
 import { RoomPhase, Participant, Prompt, RoomTimer } from "../../../shared/room.types"
 
 export class Room {
-    public id: string
+    private drawerId: number | null
+    private participants: Participant[]
+    private prompt: Prompt | null
+    private roomTimer: RoomTimer | null
+    
+    public id: number
     public phase: RoomPhase
     public round: number
     public maxPlayers: number
 
-    private DrawerId: string | null
-    private Participants: Participant[]
-    private Prompt: Prompt | null
-    private RoomTimer: RoomTimer | null
-
-    constructor(id: string, maxPlayers: number) {
+    constructor(id: number, maxPlayers: number) {
         this.id = id
         this.maxPlayers = maxPlayers
 
         this.phase = "waiting"
         this.round = 1
 
-        this.DrawerId = null
-        this.Participants = []
-        this.Prompt = null
-        this.RoomTimer = null
+        this.drawerId = null
+        this.participants = []
+        this.prompt = null
+        this.roomTimer = null
     }
+
+    getParticipants(): Participant[] {
+	    return [...this.participants]; //return copy of original
+    }
+    
+    addParticipant(participant: Participant) {
+        if (this.participants.length >= this.maxPlayers)
+			throw new Error("Room is full")
+        this.participants.push(participant);
+    }
+
+
 }
