@@ -16,7 +16,7 @@ export class RoomsService {
 	// for lobby functionality
 	getAllRooms(): Room[] {
 		return [...this.rooms.values()]
-	}
+	}–
 
     createRoom(roomId: number, maxPlayers: number): Room {
         const room = new Room(roomId, maxPlayers);
@@ -49,7 +49,6 @@ export class RoomsService {
 
 		return room;
 	}
-
 }
 
 // removeParticipant(userId: string, roomId: string) --> CLASS METHOD

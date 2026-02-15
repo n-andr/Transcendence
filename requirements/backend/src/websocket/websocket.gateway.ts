@@ -77,7 +77,7 @@ export class WebsocketGateway {
 	) {
 		const userId = socket.data.userId;
 		if (!userId)
-			return; //DEBUG return error?
+			throw new Error('User not identified');
 		const { roomId, name } = data;
 
 		// call the RoomsService :)
@@ -96,4 +96,12 @@ export class WebsocketGateway {
 		socket.emit('room_state', roomState);
 	}
 
+	@SubscribeMessage('StartGame')
+	handleStartGame(
+		@MessageBody() data: { roomId: number },
+		@ConnectedSocket() socket: Socket,
+	) {
+		this.gameService.startGame(data.roomId);
+		socket.emit('gameStarted');
+	}
 }
