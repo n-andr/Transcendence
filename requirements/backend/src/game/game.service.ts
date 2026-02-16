@@ -8,18 +8,21 @@ export class GameService {
 
     //startgame
     startGame(roomId: number): RoomState {
+        const room = this.roomsService.getRoom(roomId);
+            if (!room) 
+                throw new Error("Room not found");
+
+        // maybe the room class should just own the roomstate?
         const updatedRoomState: RoomState = {
             roomId: roomId,
             phase: "starting",
             round: 1,
+            turn: 1,
             timer: null, // TO BE UPDATED
-            prompt: null,
-            participants: this.roomsService.getRoom(roomId).getParticipants(),
-            me: 
+            prompt: null, // TO BE UPDATED
+            participants: room.getParticipants(),
         };
         return updatedRoomState;
 
     };
-    //update game
-
 }

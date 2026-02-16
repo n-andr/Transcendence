@@ -16,7 +16,7 @@ export class RoomsService {
 	// for lobby functionality
 	getAllRooms(): Room[] {
 		return [...this.rooms.values()]
-	}–
+	}
 
     createRoom(roomId: number, maxPlayers: number): Room {
         const room = new Room(roomId, maxPlayers);
@@ -29,9 +29,8 @@ export class RoomsService {
 
 		if (!room)
 			throw new Error("Room not found")
-		if (this.userToRoom.has(playerId)) // can immediately acces the right room without searching
+		if (this.userToRoom.has(playerId))
 			throw new Error("User already in room")
-		
 		
 		const participant: Participant = {
 				id: playerId,
@@ -48,6 +47,14 @@ export class RoomsService {
 		this.userToRoom.set(playerId, roomId)
 
 		return room;
+	}
+
+	listParticipants(roomId: number): string[] {
+	const room = this.getRoom(roomId);
+	if (!room)
+		throw new Error('Room not found');
+	const participants = room.getParticipants();
+	return participants.map(p => p.name);
 	}
 }
 

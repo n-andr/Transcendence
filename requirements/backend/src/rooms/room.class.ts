@@ -16,7 +16,7 @@ export class Room {
         this.maxPlayers = maxPlayers
 
         this.phase = "waiting"
-        this.round = 1
+        this.round = -1
 
         this.drawerId = null
         this.participants = []
@@ -33,6 +33,5 @@ export class Room {
 			throw new Error("Room is full")
         this.participants.push(participant);
     }
-
 
 }

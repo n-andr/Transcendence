@@ -26,16 +26,18 @@ export interface Participant {
   score: number;
 }
 
+// backend roomstate
 export interface RoomState {
   roomId: number;
-
   phase: RoomPhase;
   round: number;
-
+  turn: number,
   timer: RoomTimer | null;
   prompt: Prompt | null;
-
   participants: Participant[];
-
-  me: Participant;
 }
+
+//frontend then ADDS 'me' participant
+export type RoomViewState = RoomState & {
+    me: Participant;
+};

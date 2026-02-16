@@ -9,12 +9,14 @@ import {
 import { Socket } from 'socket.io';
 import { ConnectionRegistry } from './websocket.service';
 import { RoomsService } from 'src/rooms/rooms.service';
+import { GameService } from 'src/game/game.service';
 
 @WebSocketGateway()
 export class WebsocketGateway {
 	constructor( 
 		private readonly registry: ConnectionRegistry,
-		private readonly roomsService: RoomsService
+		private readonly roomsService: RoomsService,
+		private readonly gameService: GameService,
 	) {}
 	afterInit() { console.log('WebSocket Gateway initialized') }
 
@@ -65,15 +67,20 @@ export class WebsocketGateway {
 		});
 	}
 
+	@SubscribeMessage('create_room')
+	handleCreateRoom(
+  		@MessageBody() data: { roomId: number; maxPlayers: number },
+  		@ConnectedSocket() socket: Socket,
+		) {
+  		const room = this.roomsService.createRoom(data.roomId, data.maxPlayers);
+  		socket.emit('room_created', { roomId: room.id });
+	}
 
 
-	//start of the mock data
-	//replace with real handlers
-
-	@SubscribeMessage('play')
-	handlePlay(
-	@MessageBody() data: { userId: number },
-	@ConnectedSocket() client: Socket,
+	@SubscribeMessage('join_room')
+	handleJoinRoom(
+		@MessageBody() data: { roomId: number; name: string },
+		@ConnectedSocket() socket: Socket,
 	) {
 		const userId = socket.data.userId;
 		if (!userId)
@@ -88,7 +95,7 @@ export class WebsocketGateway {
 			roomId: room.id,
 			participants: room.getParticipants(),
 			round: room.round,
-			// turn:
+			turn: -1,
 			me: room.getParticipants().find(p => p.id === userId)
 		}
  
@@ -96,12 +103,21 @@ export class WebsocketGateway {
 		socket.emit('room_state', roomState);
 	}
 
-	@SubscribeMessage('StartGame')
+	@SubscribeMessage('start_game')
 	handleStartGame(
 		@MessageBody() data: { roomId: number },
 		@ConnectedSocket() socket: Socket,
 	) {
 		this.gameService.startGame(data.roomId);
 		socket.emit('gameStarted');
+	}
+
+	@SubscribeMessage('lobby_state')
+	handleLobbyState(
+		@MessageBody() data: { roomId: number },
+		@ConnectedSocket() socket: Socket,
+	) {
+		const names = this.roomsService.listParticipants(data.roomId);
+		socket.emit('lobby_state_response', names);
 	}
 }

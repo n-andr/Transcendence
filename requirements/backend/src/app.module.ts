@@ -20,6 +20,7 @@ import { WebsocketModule } from './websocket/websocket.module';
 import { TmpModule } from './tmp/tp.module';
 import { RoomsModule } from './rooms/rooms.module';
 import { RoomsController } from './rooms/rooms.controller';
+import { GameModule } from './game/game.module';
 
 @Module
 ({
@@ -28,12 +29,11 @@ import { RoomsController } from './rooms/rooms.controller';
 	DatabaseModule,
 	WebsocketModule,
 	TmpModule,
-  RoomsModule],
+  RoomsModule,
+  GameModule],
     //ConfigModule,//would need to be installe seperately
     //DatabaseModule,
-    //AuthModule,
-   //  UsersModule,
-    //GameModule,
+    //UsersModule,
   controllers: [AuthController, UsersController, RoomsController]
 
 })
