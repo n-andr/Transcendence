@@ -23,6 +23,15 @@ rebuild:
 	docker compose -f $(DOCKER_COMPOSE_YML) up -d
 	@echo "$(GREEN)Rebuild complete.$(RESET)"
 
+rebuild:
+	@echo "$(GREEN)Rebuilding without cache...$(RESET)"
+	docker compose -f $(DOCKER_COMPOSE_YML) down --volumes --remove-orphans
+	docker volume rm transcendence_backend_node_modules 2>/dev/null || true
+	docker volume rm transcendence_node_modules 2>/dev/null || true
+	docker compose -f $(DOCKER_COMPOSE_YML) build --no-cache
+	docker compose -f $(DOCKER_COMPOSE_YML) up -d
+	@echo "$(GREEN)Rebuild complete.$(RESET)"
+
 up:
 	@echo "$(GREEN)Starting containers in detached mode...$(RESET)"
 	docker compose -f $(DOCKER_COMPOSE_YML) up -d
