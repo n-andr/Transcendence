@@ -9,9 +9,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ConnectionRegistry } from './websocket.service';
-import type { JoinRoomPayload, TurnInfoPayload } from './dtos/ws.payloads';
+import type { GuessPayload, GuessUpdatePayload, JoinRoomPayload, TurnInfoPayload } from './dtos/ws.payloads';
 import { WS_EVENTS } from './dtos/ws.events';
 import { RoomsService } from 'src/rooms/rooms.service';
+import { GameService } from 'src/game/game.service';
 
 @WebSocketGateway()
 export class WebsocketGateway {
@@ -21,7 +22,8 @@ export class WebsocketGateway {
 
 	constructor( 
 		private readonly registry: ConnectionRegistry,
-		private readonly roomService: RoomsService
+		private readonly roomService: RoomsService,
+		private readonly gameService: GameService
 	) {}
 	afterInit() { console.log('WebSocket Gateway initialized') }
 
@@ -89,7 +91,7 @@ export class WebsocketGateway {
 		await client.join(socketRoom);
 
 		const response: TurnInfoPayload = {
-			roomd_id: room.id,
+			room_id: room.id,
 			drawer: room.drawer,
 			word: room.word,
 			word_length: room.word_length,
@@ -100,31 +102,18 @@ export class WebsocketGateway {
 		this.server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, response);
 	}
 
-	/*@SubscribeMessage('JoinRoom')
-	handleJoinRoom(
-		@MessageBody() data: { roomId: number; name: string },
-		@ConnectedSocket() socket: Socket,
+	@SubscribeMessage(WS_EVENTS.GUESS)
+	handleGuess(
+		@ConnectedSocket() client: Socket,
+		@MessageBody() payload: GuessPayload,
 	) {
-		const userId = socket.data.userId;
-		if (!userId)
-			return; //DEBUG return error?
-		const { roomId, name } = data;
-		console.log('JoinRoom');*/
-
-		// call the roomservice :)
-		/*const room = this.roomService.joinRoom(roomId, userId, name);
-
-		// setup a new roomstate
-		const roomState = {
-			roomId: room.id,
-			participants: room.getParticipants(),
-			round: room.round,
-			// turn:
-			me: room.getParticipants().find(p => p.id === userId)
-		}
- 
-		// emit the new roomstate to client
-		socket.emit('room_state', roomState);*/
-	//}
+		console.log('[recv] Guess', payload);
+		const socketRoom = `room-${payload.room_id}`;
+		const room = this.roomService.getRoom(payload.room_id);
+		if (room === undefined) return;
+		const response: any = this.gameService.guessValidation(payload, room);
+		if (!response) return;
+		this.server.to(socketRoom).emit(WS_EVENTS.GUESS_UPDATE, response);
+	}
 
 }

@@ -34,6 +34,7 @@ export class RoomsService {
 		room.id = this.nextId++;
 		room.round = 0;
 		room.turn = 0;
+		room.maxRounds = 2;//for testing
 		room.maxPlayers = maxPlayers;
 		this.rooms.set(room.id, room);//add room to map
 		this.logger.log(`Room created: id=${room.id}`);

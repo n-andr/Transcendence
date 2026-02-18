@@ -9,7 +9,7 @@ room_id = -1 -> no room. You have been send a dummy to fulfill the payload type.
 example: if you receive this after joinRoom, there was no availbale room. 
 */
 export interface TurnInfoPayload {
-	roomd_id: number;
+	room_id: number;
 	drawer: number;
 	word: string | null;
 	word_length: number;
@@ -21,13 +21,13 @@ export interface TurnInfoPayload {
 export interface GuessPayload {
 	guesser_id: number;
 	guess: string;
-	roomd_id: number;
+	room_id: number;
 }
 
 export interface GuessUpdatePayload {
 	guesser_id: number;
 	guess: string | null;
-	roomd_id: number;
+	room_id: number;
 	score: number;
 	correct: boolean;
 }
