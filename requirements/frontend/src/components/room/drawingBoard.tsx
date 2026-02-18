@@ -21,9 +21,9 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
   const scrollAnchorRef = useRef<HTMLDivElement | null>(null);
   const currentUserId = useSessionStore((s: any) => s.userId)
-  const roomId = useSessionStore((s: any) => s.roomId)
+  const roomId = useSessionStore((s:any) => s.roomId)
 
-  const role = useSessionStore((s: any) => s.role);
+  const role = useSessionStore((s:any) => s.role);
 
   const isDrawer = role === "drawer";
 
@@ -90,7 +90,7 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
     <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
       {/* Canvas area */}
       <div className="relative bg-surface border border-gray-400 rounded-lg flex-1 min-h-[280px] lg:min-h-0">
-        {/* <canvas
+        <canvas
           className="w-full h-full rounded cursor-crosshair"
           width={1600}
           height={1200}
