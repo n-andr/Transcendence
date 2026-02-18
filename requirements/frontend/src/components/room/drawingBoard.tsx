@@ -20,9 +20,9 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
   const scrollAnchorRef = useRef<HTMLDivElement | null>(null);
   const currentUserId = useSessionStore((s: any) => s.userId)
-  const roomId = useSessionStore((s:any) => s.roomId)
+  const roomId = useSessionStore((s: any) => s.roomId)
 
-  const role = useSessionStore((s:any) => s.role);
+  const role = useSessionStore((s: any) => s.role);
 
   const isDrawer = role === "drawer";
 
