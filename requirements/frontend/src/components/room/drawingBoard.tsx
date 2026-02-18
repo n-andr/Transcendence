@@ -4,18 +4,27 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { socket } from "../../api/socket";
 import { ChatMessageRow, type ChatMessage } from "./chatMessageRow";
 import { mockMessages } from "./chat.mock";
-
+import SvgBoard from "../../features/drawing/SvgBoard";
+import DrawerPanel from "./DrawerPanel";
+import GuesserPanel from "./GuesserPanel";
+import { useSessionStore } from "../../state/sessionStore";
 
 type Props = {
   onGuessCorrect?: (userId: number) => void;
 };
 
 
+//we nned to rename it or bring chat into an separate component
 export default function DrawingBoard({ onGuessCorrect }: Props) {
 	const [text, setText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
   const scrollAnchorRef = useRef<HTMLDivElement | null>(null);
-  const currentUserId = 42;
+  const currentUserId = useSessionStore((s: any) => s.userId)
+  const roomId = useSessionStore((s: any) => s.roomId)
+
+  const role = useSessionStore((s: any) => s.role);
+
+  const isDrawer = role === "drawer";
 
   const sortedMessages = useMemo(
     () => [...messages].sort((a, b) => a.timestamp - b.timestamp),
@@ -23,15 +32,8 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   );
 
   function send() {
-		const trimmed = text.trim();
-		if (!trimmed) return;
-
-		// input-only: just emit, no chat rendering yet
-		// socket.emit("chat:send", { roomId, text: trimmed });
-		// console.log("[ws] chat:send", { roomId, text: trimmed });
-
-
-		// Input-only test: server logs it and replies with "youAre"
+	const trimmed = text.trim();
+	if (!trimmed) return;
     socket.emit("whoAmI", { text: trimmed });
 
     setMessages((prev) => [
@@ -85,12 +87,16 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
     <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
       {/* Canvas area */}
       <div className="relative bg-surface border border-gray-400 rounded-lg flex-1 min-h-[280px] lg:min-h-0">
-        <canvas
+        {/* <canvas
           className="w-full h-full rounded cursor-crosshair"
           width={1600}
           height={1200}
-        />
+        /> */}
+		<SvgBoard roomId={roomId} socket={socket} mode={isDrawer ? "draw" : "view"} />
+		{/* tools panel */}
+        {isDrawer ? <DrawerPanel /> : <GuesserPanel />}
       </div>
+
 
       {/* Chat/Guesses section */}
       <div className="w-full lg:w-64 xl:w-72 flex flex-col min-h-0 bg-surface border border-gray-200 rounded-lg p-3">
