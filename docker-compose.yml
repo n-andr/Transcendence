@@ -6,7 +6,7 @@ services:
     build:
       context: ./requirements/backend
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: transcendence-backend
     command: /app/start.sh
     ports:
       - "3000:3000"
@@ -19,12 +19,12 @@ services:
     build:
       context: ./requirements/frontend
       dockerfile: Dockerfile
-    container_name: frontend
+    container_name: transcendence-frontend
     ports:
       - "5173:5173"
     volumes:
       - ./requirements/frontend:/app
-      - node_modules:/app/node_modules
+      - frontend_node_modules:/app/node_modules
     command: npm run dev
   postgres:
     image: postgres:16-alpine
@@ -42,5 +42,5 @@ services:
 
 volumes:
   postgres_data:
-  node_modules:
+  frontend_node_modules:
   backend_node_modules:
