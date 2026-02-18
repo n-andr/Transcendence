@@ -12,26 +12,23 @@ export class GameService {
 		private readonly roomsService: RoomsService
 	) {}*/
 	startTurn(room: Room, server: Server): void {
-		if (room.active == false) return ;
 		if (room.round === 0) this.increaseRound(room);
 		else this.increaseTurn(room);
 		room.word = "example_word";
 		room.word_length = room.word!.length;
 		room.drawer = room.players[room.turn-1].userId;
 		const socketRoom = `room-${room.id}`;
-		let payload: TurnInfoPayload = {
+		const payload: TurnInfoPayload = {
 			room_id: room.id,
 			drawer: room.drawer,
-			word: null,
+			word: room.word,
 			word_length: room.word_length,
 			round: room.round,
 			turn: room.turn,
 			players: room.players,
 			time_to_display: 10_000,//10s for console test
 		}
-		server.to(socketRoom).except(`user-${room.drawer}`).emit(WS_EVENTS.TURN_INFO, payload);
-		payload.word = room.word;
-		server.to(`user-${room.drawer}`).emit(WS_EVENTS.TURN_INFO, payload);
+		server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, payload);
 		this.logger.log(`Room ${room.id} round.turn ${room.round}.${room.turn}, drawerId: ${room.drawer} draws ${room.word}`);
 		room.timeout = setTimeout(() => {
 			room.timeout = undefined;
@@ -86,15 +83,11 @@ export class GameService {
 
 	endOfTurn(room: Room, server: Server) {
 		//update drawer score
-		console.log('EndOfTurn', room.round, room.turn);
 		const drawer = room.players.find(p => p.userId === room.drawer);
 		if (drawer) drawer.score += room.correctGuesses.size;
 		room.correctGuesses.clear();
 		let isFinal = false;
-		if (room.round === room.maxRounds && room.turn === room.players.length)  {
-			isFinal = true;
-			room.active = false;
-		}
+		if (room.round === room.maxRounds && room.turn === room.players.length) isFinal = true;
 		const response: ResultsPayload = {
 			final: isFinal,
 			solution: room.word!,
@@ -108,7 +101,6 @@ export class GameService {
 				room.timeout = undefined;
 				this.startTurn(room, server);
 			}
-			room.timeout = undefined;
 		}, response.time_to_display);
 	}
 
