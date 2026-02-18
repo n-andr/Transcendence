@@ -5,6 +5,7 @@ import type { PlayerDto } from "src/websocket/dtos/player.dto";
 import { UsersService } from "src/users/users.service";
 import { UserScalarFieldEnum } from "src/generated/internal/prismaNamespace";
 import { GameService } from "src/game/game.service";
+import { RoomsModule } from "./rooms.module";
 
 
 @Injectable()
@@ -36,6 +37,7 @@ export class RoomsService {
 		room.turn = 0;
 		room.maxRounds = 2;//for testing
 		room.maxPlayers = maxPlayers;
+		room.active = false;
 		this.rooms.set(room.id, room);//add room to map
 		this.logger.log(`Room created: id=${room.id}`);
 		return room;
@@ -76,11 +78,6 @@ export class RoomsService {
 				room.players.push(player);
 				this.userToRoom.set(newuserId, room.id);
 				console.log(`User ${player.userId} ${player.nickname} joined room ${room.id}`);
-				if (room.players.length === 3) {
-					this.gameService.increaseRound(room);
-				}
-				//check if enough players to play
-				//if enough players, increase round (because this does round ++ and turn = 1 and gets a word and player ...)
 				return room;
 			}
 		}
@@ -109,6 +106,10 @@ export class RoomsService {
 		this.userToRoom.delete(userId);
 		console.log('player', userId, 'removed from Room', roomId);
 		//if < 3 players, end game early, send final results
+		/*if (room.players.length < 3) {
+			console.log(roomId, 'Room closing for lack of players');
+
+		}*/
 	}
 
 }

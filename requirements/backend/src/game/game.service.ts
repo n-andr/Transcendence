@@ -1,7 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Room } from 'src/rooms/room.class';
 //import { RoomsService } from 'src/rooms/rooms.service';
-import { GuessPayload, GuessUpdatePayload } from 'src/websocket/dtos/ws.payloads';
+import { GuessPayload, GuessUpdatePayload, ResultsPayload, TurnInfoPayload } from 'src/websocket/dtos/ws.payloads';
+import { Server } from 'socket.io'
+import { WS_EVENTS } from 'src/websocket/dtos/ws.events';
 
 @Injectable()
 export class GameService {
@@ -9,12 +11,32 @@ export class GameService {
 	/*constructor(
 		private readonly roomsService: RoomsService
 	) {}*/
-	startTurn(room: Room): void {
+	startTurn(room: Room, server: Server): void {
+		if (room.active == false) return ;
+		if (room.round === 0) this.increaseRound(room);
+		else this.increaseTurn(room);
 		room.word = "example_word";
 		room.word_length = room.word!.length;
 		room.drawer = room.players[room.turn-1].userId;
-		//start turn (choose word, drawer)
+		const socketRoom = `room-${room.id}`;
+		let payload: TurnInfoPayload = {
+			room_id: room.id,
+			drawer: room.drawer,
+			word: null,
+			word_length: room.word_length,
+			round: room.round,
+			turn: room.turn,
+			players: room.players,
+			time_to_display: 10_000,//10s for console test
+		}
+		server.to(socketRoom).except(`user-${room.drawer}`).emit(WS_EVENTS.TURN_INFO, payload);
+		payload.word = room.word;
+		server.to(`user-${room.drawer}`).emit(WS_EVENTS.TURN_INFO, payload);
 		this.logger.log(`Room ${room.id} round.turn ${room.round}.${room.turn}, drawerId: ${room.drawer} draws ${room.word}`);
+		room.timeout = setTimeout(() => {
+			room.timeout = undefined;
+			this.endOfTurn(room, server);
+		}, payload.time_to_display);
 	}
 
 	increaseTurn(room: Room): void {
@@ -23,7 +45,7 @@ export class GameService {
 			return;
 		}
 		room.turn += 1;
-		this.startTurn(room);
+		//this.startTurn(room);
 	}
 
 	increaseRound(room: Room): void {
@@ -34,7 +56,7 @@ export class GameService {
 		}
 		room.turn = 1;
 		this.logger.log(`Room ${room.id} started round ${room.round}`);
-		this.startTurn(room);
+		//this.startTurn(room);
 		return;
 	}
 
@@ -50,7 +72,6 @@ export class GameService {
 		if (iscorrect === true) {
 			player.score += 1;
 			room.correctGuesses.add(player.userId);
-			if (room.correctGuesses.size >= room.players.length -1) console.log('All guessed correctly');//trigger results
 		}
 		
 		const response: GuessUpdatePayload = {
@@ -61,5 +82,43 @@ export class GameService {
 			correct: iscorrect,
 		};
 		return response;
+	}
+
+	endOfTurn(room: Room, server: Server) {
+		//update drawer score
+		console.log('EndOfTurn', room.round, room.turn);
+		const drawer = room.players.find(p => p.userId === room.drawer);
+		if (drawer) drawer.score += room.correctGuesses.size;
+		room.correctGuesses.clear();
+		let isFinal = false;
+		if (room.round === room.maxRounds && room.turn === room.players.length)  {
+			isFinal = true;
+			room.active = false;
+		}
+		const response: ResultsPayload = {
+			final: isFinal,
+			solution: room.word!,
+			time_to_display: 1_000,//1s for console tests
+		};
+		const socketRoom = `room-${room.id}`;
+		server.to(socketRoom).emit(WS_EVENTS.RESULTS, response);
+		room.timeout = setTimeout(() => {
+			if (!isFinal) {
+				//start next turn after timeout
+				room.timeout = undefined;
+				this.startTurn(room, server);
+			}
+			room.timeout = undefined;
+		}, response.time_to_display);
+	}
+
+	checkEndOfTurn(room: Room, server: Server) {
+		if (room.correctGuesses.size < room.players.length -1) return;
+		console.log('All guessed correctly');//trigger results
+		if (room.timeout) {
+			clearTimeout(room.timeout);
+			room.timeout = undefined;
+		}
+		this.endOfTurn(room, server);
 	}
 }

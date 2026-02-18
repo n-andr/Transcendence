@@ -52,7 +52,7 @@ export class WebsocketGateway {
 
 	//events from here on downwards
 	@SubscribeMessage('identify') //play
-	handleIdentify(
+	async handleIdentify(
 		@MessageBody() data: { userId: number },
 		@ConnectedSocket() socket: Socket,
 	) {
@@ -62,6 +62,7 @@ export class WebsocketGateway {
 		console.log(`Socket ${socket.id} identified as user ${data.userId}`);
 		socket.emit('identified'); // roomstate
 		this.registry.printRegistry();
+		await socket.join(`user-${data.userId}`);
 	}
 	
 	@SubscribeMessage('whoAmI')
@@ -98,8 +99,13 @@ export class WebsocketGateway {
 			round: room.round,
 			turn: room.turn,
 			players: room.players,
+			time_to_display: 0,//no timer
 		};
 		this.server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, response);
+		if (room.players.length === 3) {
+			room.active = true;
+			this.gameService.startTurn(room, this.server);
+		} 
 	}
 
 	@SubscribeMessage(WS_EVENTS.GUESS)
@@ -114,6 +120,7 @@ export class WebsocketGateway {
 		const response: any = this.gameService.guessValidation(payload, room);
 		if (!response) return;
 		this.server.to(socketRoom).emit(WS_EVENTS.GUESS_UPDATE, response);
+		this.gameService.checkEndOfTurn(room, this.server);
 	}
 
 }

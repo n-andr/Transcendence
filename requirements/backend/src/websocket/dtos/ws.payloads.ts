@@ -16,6 +16,7 @@ export interface TurnInfoPayload {
 	round: number;
 	turn: number;
 	players: PlayerDto[];
+	time_to_display: number;
 }
 
 export interface GuessPayload {

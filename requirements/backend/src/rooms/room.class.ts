@@ -12,4 +12,6 @@ export class Room {
 	public word_length: number//-1 outsie of turn
 	public players: PlayerDto[] = [];
 	correctGuesses: Set<number> = new Set();//user ids that guessed correctly
+	timeout?: NodeJS.Timeout;
+	public active: boolean;
 }
