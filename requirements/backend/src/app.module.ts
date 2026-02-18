@@ -18,6 +18,7 @@ import { UsersController } from './users/users.controller';
 import { DatabaseModule } from './database/database.module';
 import { WebsocketModule } from './websocket/websocket.module';
 import { TmpModule } from './tmp/tp.module';
+import { RoomsModule } from './rooms/rooms.module';
 
 @Module
 ({
@@ -25,6 +26,7 @@ import { TmpModule } from './tmp/tp.module';
 	UsersModule,
 	DatabaseModule,
 	WebsocketModule,
+	RoomsModule,
 	TmpModule],
     //ConfigModule,//would need to be installe seperately
     //DatabaseModule,

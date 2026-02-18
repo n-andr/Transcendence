@@ -8,13 +8,13 @@ import {
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { ConnectionRegistry } from './websocket.service';
-import { RoomService } from 'src/rooms/rooms.service';
+//import { RoomService } from 'src/rooms/rooms.service';
 
 @WebSocketGateway()
 export class WebsocketGateway {
 	constructor( 
 		private readonly registry: ConnectionRegistry,
-		private readonly roomService: RoomService
+		//private readonly roomService: RoomService
 	) {}
 	afterInit() { console.log('WebSocket Gateway initialized') }
 
@@ -73,9 +73,10 @@ export class WebsocketGateway {
 		if (!userId)
 			return; //DEBUG return error?
 		const { roomId, name } = data;
+		console.log('JoinRoom');
 
 		// call the roomservice :)
-		const room = this.roomService.joinRoom(roomId, userId, name);
+		/*const room = this.roomService.joinRoom(roomId, userId, name);
 
 		// setup a new roomstate
 		const roomState = {
@@ -87,7 +88,7 @@ export class WebsocketGateway {
 		}
  
 		// emit the new roomstate to client
-		socket.emit('room_state', roomState);
+		socket.emit('room_state', roomState);*/
 	}
 
 }

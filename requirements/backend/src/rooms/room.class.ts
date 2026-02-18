@@ -1,7 +1,11 @@
-import { RoomPhase, Participant, Prompt, RoomTimer } from "../../../shared/room.types"
+//import { RoomPhase, Participant, Prompt, RoomTimer } from "../../../shared/room.types"
 
 export class Room {
-    private drawerId: number | null
+	public id: number
+    public round: number
+	public turn: number
+    public maxPlayers: number
+    /*private drawerId: number | null
     private participants: Participant[]
     private prompt: Prompt | null
     private roomTimer: RoomTimer | null
@@ -32,7 +36,7 @@ export class Room {
         if (this.participants.length >= this.maxPlayers)
 			throw new Error("Room is full")
         this.participants.push(participant);
-    }
+    }*/
 
 
 }

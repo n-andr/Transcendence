@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-import { Controller, Get, Param, Post, Body } from "@nestjs/common";
+/*import { Controller, Get, Param, Post, Body } from "@nestjs/common";
 import { RoomService } from "./rooms.service";
 
 
@@ -34,6 +34,6 @@ export class RoomsController {
 	}
 
 
-}
+}*/
 
 
