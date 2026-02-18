@@ -9,12 +9,12 @@ import DrawerPanel from "./DrawerPanel";
 import GuesserPanel from "./GuesserPanel";
 import { useSessionStore } from "../../state/sessionStore";
 
-
 type Props = {
   onGuessCorrect?: (userId: number) => void;
 };
 
 
+//we nned to rename it or bring chat into an separate component
 export default function DrawingBoard({ onGuessCorrect }: Props) {
 	const [text, setText] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
@@ -119,6 +119,7 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
 			/>
 		)}
       </div>
+
 
       {/* Chat/Guesses section */}
       <div className="w-full lg:w-64 xl:w-72 flex flex-col min-h-0 bg-surface border border-gray-200 rounded-lg p-3">
