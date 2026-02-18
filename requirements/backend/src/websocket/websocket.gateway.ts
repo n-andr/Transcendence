@@ -1,20 +1,27 @@
 import {
 	WebSocketGateway,
+	WebSocketServer,
 	OnGatewayInit,
 	OnGatewayConnection,
 	SubscribeMessage,
 	MessageBody,
 	ConnectedSocket,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { ConnectionRegistry } from './websocket.service';
-//import { RoomService } from 'src/rooms/rooms.service';
+import type { JoinRoomPayload, TurnInfoPayload } from './dtos/ws.payloads';
+import { WS_EVENTS } from './dtos/ws.events';
+import { RoomsService } from 'src/rooms/rooms.service';
 
 @WebSocketGateway()
 export class WebsocketGateway {
+	//enables sending from anywhere in gateway
+	@WebSocketServer()
+	server: Server;
+
 	constructor( 
 		private readonly registry: ConnectionRegistry,
-		//private readonly roomService: RoomService
+		private readonly roomService: RoomsService
 	) {}
 	afterInit() { console.log('WebSocket Gateway initialized') }
 
@@ -35,6 +42,7 @@ export class WebsocketGateway {
 	handleDisconnect(client: Socket) {
 		const userId = client.data.userId;
 		if (!userId) return;
+		this.roomService.removePlayer(userId);
 		this.registry.removeConnection(userId, client);
 		console.log(`Client ${client.id} with user id ${client.data.userId} disconnected`);
 	}
@@ -64,7 +72,27 @@ export class WebsocketGateway {
 		});
 	}
 
-	@SubscribeMessage('JoinRoom')
+	@SubscribeMessage(WS_EVENTS.JOIN_ROOM) 
+	async handleJoinRoom(
+		@ConnectedSocket() client: Socket,
+		@MessageBody() payload: JoinRoomPayload,
+	) {
+		console.log('[recv] JoinRoom', payload);
+		const room = await this.roomService.addPlayerToFirstAvailableRoom(payload.user_id);
+		const response: TurnInfoPayload = {
+			roomd_id: room.id,
+			drawer: room.drawer,
+			word: room.word,
+			word_length: room.word_length,
+			round: room.round,
+			turn: room.turn,
+			players: room.players,
+		};
+
+		client.emit(WS_EVENTS.TURN_INFO, response);
+	}
+
+	/*@SubscribeMessage('JoinRoom')
 	handleJoinRoom(
 		@MessageBody() data: { roomId: number; name: string },
 		@ConnectedSocket() socket: Socket,
@@ -73,7 +101,7 @@ export class WebsocketGateway {
 		if (!userId)
 			return; //DEBUG return error?
 		const { roomId, name } = data;
-		console.log('JoinRoom');
+		console.log('JoinRoom');*/
 
 		// call the roomservice :)
 		/*const room = this.roomService.joinRoom(roomId, userId, name);
@@ -89,6 +117,6 @@ export class WebsocketGateway {
  
 		// emit the new roomstate to client
 		socket.emit('room_state', roomState);*/
-	}
+	//}
 
 }

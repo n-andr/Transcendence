@@ -23,7 +23,7 @@ export class UsersService {
 			where: { email },
 		});
 	}
-	getUserById(id: number) {
+	async getUserById(id: number): Promise<User | null> {
 		console.log(`I am fetching User data by ID: ${id}`);
 		return this.prisma.user.findUnique({
 			where: { id },
