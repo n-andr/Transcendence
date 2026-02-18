@@ -1,1 +1,1 @@
-export default function DrawerPanel(){ return;}
+export default function DrawerPanel(){ return(<div></div>);}

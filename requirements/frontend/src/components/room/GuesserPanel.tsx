@@ -1,1 +1,1 @@
-export default function GuesserPanel(){}
+export default function GuesserPanel(){ return (<div></div>);}

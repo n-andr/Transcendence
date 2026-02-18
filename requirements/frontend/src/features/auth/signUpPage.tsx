@@ -56,6 +56,8 @@ const setAuth = useSessionStore((s) => s.setAuth);
     setFormError("");
     setSuccessMsg("");
 
+	const setAuth = useSessionStore((s) => s.setAuth);
+
     try {
       const result = await signup({
         email: email.trim(),
@@ -70,6 +72,12 @@ const setAuth = useSessionStore((s) => s.setAuth);
       // 3) show success
       setSuccessMsg(result.message || "Account created successfully 🎉");
 
+	  setAuth("temp-token", {
+		id: res.id,
+		email: res.email,
+		username: res.username,
+	});
+	
       // 4) after 3s → authorize + redirect
       setTimeout(() => {
         // setLoggedIn({
