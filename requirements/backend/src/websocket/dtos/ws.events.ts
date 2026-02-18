@@ -5,7 +5,8 @@ export const WS_EVENTS = {
 	GUESS_UPDATE: "guessUpdate",
 	RESULTS: "results",
 	TURN_INFO: "turnInfo",
-	DRAWING: "drawing"
+	DRAWING: "drawing",
+	ROOM_FULL: "roomFull"
 } as const;
 
 export type WSEvent = typeof WS_EVENTS[keyof typeof WS_EVENTS]

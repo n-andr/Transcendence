@@ -4,6 +4,7 @@ import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
 import type { PlayerDto } from "src/websocket/dtos/player.dto";
 import { UsersService } from "src/users/users.service";
 import { UserScalarFieldEnum } from "src/generated/internal/prismaNamespace";
+import { GameService } from "src/game/game.service";
 
 
 @Injectable()
@@ -11,6 +12,7 @@ export class RoomsService {
 	private readonly logger = new Logger(RoomsService.name);
 	constructor (
 		private readonly usersService: UsersService,
+		private readonly gameService: GameService,
 	) {}
 	
     private rooms = new Map<number, Room>();
@@ -73,6 +75,9 @@ export class RoomsService {
 				room.players.push(player);
 				this.userToRoom.set(newuserId, room.id);
 				console.log(`User ${player.userId} ${player.nickname} joined room ${room.id}`);
+				if (room.players.length === 3) {
+					this.gameService.increaseRound(room);
+				}
 				//check if enough players to play
 				//if enough players, increase round (because this does round ++ and turn = 1 and gets a word and player ...)
 				return room;
@@ -102,6 +107,7 @@ export class RoomsService {
 		room.players = room.players.filter(p => p.userId !== userId);
 		this.userToRoom.delete(userId);
 		console.log('player', userId, 'removed from Room', roomId);
+		//if < 3 players, end game early, send final results
 	}
 
 }

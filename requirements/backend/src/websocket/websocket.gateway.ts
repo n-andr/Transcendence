@@ -40,6 +40,7 @@ export class WebsocketGateway {
 	}
 
 	handleDisconnect(client: Socket) {
+		//automatically removes socket from socket.io rooms
 		const userId = client.data.userId;
 		if (!userId) return;
 		this.roomService.removePlayer(userId);
@@ -79,6 +80,14 @@ export class WebsocketGateway {
 	) {
 		console.log('[recv] JoinRoom', payload);
 		const room = await this.roomService.addPlayerToFirstAvailableRoom(payload.user_id);
+		if (room.id === -1) {
+			client.emit(WS_EVENTS.ROOM_FULL);
+			return;
+		}
+
+		const socketRoom = `room-${room.id}`;
+		await client.join(socketRoom);
+
 		const response: TurnInfoPayload = {
 			roomd_id: room.id,
 			drawer: room.drawer,
@@ -88,8 +97,7 @@ export class WebsocketGateway {
 			turn: room.turn,
 			players: room.players,
 		};
-
-		client.emit(WS_EVENTS.TURN_INFO, response);
+		this.server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, response);
 	}
 
 	/*@SubscribeMessage('JoinRoom')
