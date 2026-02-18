@@ -1,17 +1,25 @@
 import {
 	WebSocketGateway,
+	WebSocketServer,
 	OnGatewayInit,
 	OnGatewayConnection,
 	SubscribeMessage,
 	MessageBody,
 	ConnectedSocket,
 } from '@nestjs/websockets';
-import { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
+import { OnEvent } from '@nestjs/event-emitter';
 import { ConnectionRegistry } from './websocket.service';
+import { GameService } from '../game/game.service';
 
 @WebSocketGateway()
 export class WebsocketGateway {
-	constructor( private readonly registry: ConnectionRegistry) {}
+	@WebSocketServer()
+	server: Server;
+	constructor(
+		private readonly registry: ConnectionRegistry,
+		private readonly gameService: GameService,
+	) {}
 	afterInit() { console.log('WebSocket Gateway initialized') }
 
 	//Lifecycle hooks
@@ -48,7 +56,7 @@ export class WebsocketGateway {
 		socket.emit('identified');
 		this.registry.printRegistry();
 	}
-	
+
 	@SubscribeMessage('whoAmI')
 	handleWhoAmI(
 		@MessageBody() data: any,//call with empty data {}
@@ -58,6 +66,28 @@ export class WebsocketGateway {
 		client.emit('youAre', {
 			userId: client.data.userId ?? null,
 		});
+	}
+
+	@SubscribeMessage('drawing_move_made')
+	handleDrawingMove(
+		@MessageBody() data: any,
+		@ConnectedSocket() client: Socket,
+	) {
+		if (client.id != this.gameService.getNextDrawer(data.room_id)) {
+			throw new Error(`Client is not the drawer of roomId=${data.room_id}`);
+		}
+		this.server.to(data.room_id).emit('drawing_broadcast', data);
+	}
+
+	// internal events from here on downwards
+	@OnEvent('trigger_results')
+	sendResults(evt: { roomID: string; payload: any }) {
+		this.server.to(evt.roomID).emit('game_results', evt.payload);
+	}
+
+	@OnEvent('start_turn')
+	sendTurnInfo(evt: { roomID: string; turn_info: any}) {
+		this.server.to(evt.roomID).emit('turn_info', evt.turn_info);
 	}
 
 
