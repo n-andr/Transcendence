@@ -20,9 +20,9 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
   const scrollAnchorRef = useRef<HTMLDivElement | null>(null);
   const currentUserId = useSessionStore((s: any) => s.userId)
-  const roomId = useSessionStore((s: any) => s.roomId)
+  const roomId = useSessionStore((s:any) => s.roomId)
 
-  const role = useSessionStore((s: any) => s.role);
+  const role = useSessionStore((s:any) => s.role);
 
   const isDrawer = role === "drawer";
 
@@ -102,14 +102,19 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   return (
     <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
       {/* Canvas area */}
-      <div className="w-full lg:flex-1">
-        <div ref={canvasContainerRef} className="relative bg-surface border border-gray-400 rounded-lg w-full aspect-[4/3] min-h-[280px]">
-          <canvas
-            className="w-full h-full rounded cursor-crosshair"
-            width={canvasSize.width}
-            height={canvasSize.height}
-          />
-        </div>
+      <div className="relative bg-surface border border-gray-400 rounded-lg flex-1 min-h-[280px] lg:min-h-0">
+		{/* drawing tools panel */}
+        {/* {isDrawer ? <DrawerPanel />} */}
+		<DrawingCanvas isDrawer={isDrawer} color={color} />
+
+		{isDrawer && (
+			<DrawerPanel
+			color={color}
+			onColorChange={setColor}
+			onUndo={() => socket.emit("canvas:undo")}
+			onClear={() => socket.emit("canvas:clear")}
+			/>
+		)}
       </div>
 
       {/* Chat/Guesses section */}
