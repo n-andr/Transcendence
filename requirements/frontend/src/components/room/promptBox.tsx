@@ -2,6 +2,7 @@ export default function PromptBox() {
   // Mock prompt
   const prompt = "Igloo";
   const isDrawer = true; // Mock role
+  
 
   return (
     <div className="bg-surface rounded-lg p-4 border border-surface">
