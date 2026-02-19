@@ -22,7 +22,7 @@ export class RoomsService {
 
 	onModuleInit() {
 		this.logger.log("Initializing RoomsService ...");
-		const noRoom = this.createRoom(0);
+		//const noRoom = this.createRoom(0);
 		const room = this.createRoom(5);
 		console.log("Default room created");
 		this.logger.log(`Room created on startup: id=${room.id}, maxPlayers=${room.maxPlayers}`);
@@ -35,9 +35,9 @@ export class RoomsService {
 		room.id = this.nextId++;
 		room.round = 0;
 		room.turn = 0;
-		room.maxRounds = 2;//for testing
+		room.maxRounds = 2;//2 for testing
 		room.maxPlayers = maxPlayers;
-		room.active = false;
+		//room.active = false;
 		this.rooms.set(room.id, room);//add room to map
 		this.logger.log(`Room created: id=${room.id}`);
 		return room;
@@ -105,27 +105,7 @@ export class RoomsService {
 		room.players = room.players.filter(p => p.userId !== userId);
 		this.userToRoom.delete(userId);
 		console.log('player', userId, 'removed from Room', roomId);
-		//if < 3 players, end game early, send final results
-		/*if (room.players.length < 3) {
-			console.log(roomId, 'Room closing for lack of players');
-
-		}*/
+		//if < min players, end game early, send final results
 	}
 
 }
-// removeParticipant(userId: string, roomId: string) --> CLASS METHOD
-	// receives player ID that wants to leave from the client
-	// the updated room, so the frontend sees that the player left.
-//import { Participant } from "../../../shared/room.types";
-
-//temporarily copied from shared folder to silence problems
-/*export interface Participant {
-  id: number;
-  name: string;
-  avatarUrl?: string;
-
-  role: "drawer" | "guesser"; //| "spectator"
-  status: "connected" | "disconnected"; // guessed correctly 
-
-  score: number;
-}*/

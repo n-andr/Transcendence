@@ -16,7 +16,7 @@ import { GameService } from 'src/game/game.service';
 
 @WebSocketGateway()
 export class WebsocketGateway {
-	//enables sending from anywhere in gateway
+	//more flexible emit
 	@WebSocketServer()
 	server: Server;
 
@@ -88,7 +88,7 @@ export class WebsocketGateway {
 			return;
 		}
 
-		const socketRoom = `room-${room.id}`;
+		const socketRoom = `room-${room.id}`;//add user to socket room for the game room
 		await client.join(socketRoom);
 
 		const response: TurnInfoPayload = {
@@ -103,7 +103,7 @@ export class WebsocketGateway {
 		};
 		this.server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, response);
 		if (room.players.length === 3) {
-			room.active = true;
+			//room.active = true;
 			this.gameService.startTurn(room, this.server);
 		} 
 	}
