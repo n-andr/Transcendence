@@ -5,8 +5,9 @@ import { socket } from "../../api/socket";
 import { ChatMessageRow, type ChatMessage } from "./chatMessageRow";
 import { mockMessages } from "./chat.mock";
 // import SvgBoard from "../../features/drawing/SvgBoard";
-import DrawerPanel from "./DrawerPanel";
-import GuesserPanel from "./GuesserPanel";
+import { DrawingCanvas } from "./DrawingCanvas";
+import {DrawerPanel} from "./DrawerPanel";
+
 import { useSessionStore } from "../../state/sessionStore";
 
 type Props = {
@@ -22,9 +23,12 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   const currentUserId = useSessionStore((s: any) => s.userId)
   const roomId = useSessionStore((s:any) => s.roomId)
 
+  const [color, setColor] = useState("#111111");
   const role = useSessionStore((s:any) => s.role);
 
-  const isDrawer = role === "drawer";
+//   const isDrawer = role === "drawer"; //get role from storage, update storage from socket
+
+  const isDrawer = true; 
 
   const sortedMessages = useMemo(
     () => [...messages].sort((a, b) => a.timestamp - b.timestamp),
@@ -84,19 +88,28 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   }, [onGuessCorrect]);
 
   const session = useSessionStore();
-	console.log(session);
+	console.log("useSessionStore():", session);
   return (
     <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
       {/* Canvas area */}
       <div className="relative bg-surface border border-gray-400 rounded-lg flex-1 min-h-[280px] lg:min-h-0">
-        <canvas
+        {/* <canvas
           className="w-full h-full rounded cursor-crosshair"
           width={1600}
           height={1200}
-        />
-		{/* <SvgBoard roomId={roomId} socket={socket} mode={isDrawer ? "draw" : "view"} /> */}
-		{/* tools panel */}
-        {/* {isDrawer ? <DrawerPanel /> : <GuesserPanel />} */}
+        /> */}
+		{/* drawing tools panel */}
+        {/* {isDrawer ? <DrawerPanel />} */}
+		<DrawingCanvas isDrawer={isDrawer} color={color} />
+
+		{isDrawer && (
+			<DrawerPanel
+			color={color}
+			onColorChange={setColor}
+			onUndo={() => socket.emit("canvas:undo")}
+			onClear={() => socket.emit("canvas:clear")}
+			/>
+		)}
       </div>
 
 
