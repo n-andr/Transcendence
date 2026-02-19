@@ -5,8 +5,9 @@ import { socket } from "../../api/socket";
 import { ChatMessageRow, type ChatMessage } from "./chatMessageRow";
 import { mockMessages } from "./chat.mock";
 // import SvgBoard from "../../features/drawing/SvgBoard";
-import DrawerPanel from "./DrawerPanel";
-import GuesserPanel from "./GuesserPanel";
+import { DrawingCanvas } from "./DrawingCanvas";
+import {DrawerPanel} from "./DrawerPanel";
+
 import { useSessionStore } from "../../state/sessionStore";
 
 type Props = {
@@ -82,7 +83,7 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   }, [onGuessCorrect]);
 
   const session = useSessionStore();
-	console.log(session);
+	console.log("useSessionStore():", session);
   useEffect(() => {
     const container = canvasContainerRef.current;
     if (!container) return;
