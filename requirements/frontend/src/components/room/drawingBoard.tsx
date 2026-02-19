@@ -22,9 +22,12 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
   const currentUserId = useSessionStore((s: any) => s.userId)
   const roomId = useSessionStore((s:any) => s.roomId)
 
+  const [color, setColor] = useState("#111111");
   const role = useSessionStore((s:any) => s.role);
 
-  const isDrawer = role === "drawer";
+//   const isDrawer = role === "drawer"; //get role from storage, update storage from socket
+
+  const isDrawer = true; 
 
   const sortedMessages = useMemo(
     () => [...messages].sort((a, b) => a.timestamp - b.timestamp),
