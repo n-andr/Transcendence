@@ -39,10 +39,13 @@ export interface ResultsPayload {
 	time_to_display: number;
 }
 
-export interface DrawingPayload {
+export type Point = { x: number; y: number };
+export type Stroke = { id: string; color: string; width: number; points: Point[] };
+
+export interface DrawPayload {
 	room_id: number;
 	drawer: Number;
-	coordinate_x: number;
-	coordinate_y: number;
+	width: number;
+	strokes: Stroke[];
 	color: `#${string}`// e.g. "#ff00ff"
 }
