@@ -9,6 +9,8 @@ import { DrawingCanvas } from "./DrawingCanvas";
 import {DrawerPanel} from "./DrawerPanel";
 
 import { useSessionStore } from "../../state/sessionStore";
+import { emitCanvasClear, emitCanvasUndo } from "../../api/drawingSocket";
+
 
 type Props = {
   onGuessCorrect?: (userId: number) => void;
@@ -100,14 +102,14 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
         /> */}
 		{/* drawing tools panel */}
         {/* {isDrawer ? <DrawerPanel />} */}
-		<DrawingCanvas isDrawer={isDrawer} color={color} />
+		<DrawingCanvas isDrawer={isDrawer} roomId={roomId} drawerId={currentUserId} color={color} />
 
 		{isDrawer && (
 			<DrawerPanel
 			color={color}
 			onColorChange={setColor}
-			onUndo={() => socket.emit("canvas:undo")}
-			onClear={() => socket.emit("canvas:clear")}
+			onUndo={emitCanvasUndo}
+  			onClear={emitCanvasClear}
 			/>
 		)}
       </div>
