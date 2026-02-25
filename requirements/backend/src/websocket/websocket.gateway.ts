@@ -153,6 +153,7 @@ export class WebsocketGateway {
 			if (!room) return;
 		if (client.data.userId !== room.drawer) return;
 		this.roomService.appendStrokes(payload.strokes, client.data.roomId);
+		client.to(`room-${payload.room_id}`).emit(WS_EVENTS.STROKE_APPEND, payload);
 	}
 
 	@SubscribeMessage(WS_EVENTS.CANVAS_CLEAR)
