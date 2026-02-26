@@ -9,6 +9,8 @@ import { DrawingCanvas } from "./DrawingCanvas";
 import {DrawerPanel} from "./DrawerPanel";
 
 import { useSessionStore } from "../../state/sessionStore";
+import { emitCanvasClear, emitCanvasUndo } from "../../api/drawingSocket";
+
 
 type Props = {
   onGuessCorrect?: (userId: number) => void;
@@ -107,16 +109,21 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
     <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
       {/* Canvas area */}
       <div className="relative bg-surface border border-gray-400 rounded-lg flex-1 min-h-[280px] lg:min-h-0">
+        {/* <canvas
+          className="w-full h-full rounded cursor-crosshair"
+          width={1600}
+          height={1200}
+        /> */}
 		{/* drawing tools panel */}
         {/* {isDrawer ? <DrawerPanel />} */}
-		<DrawingCanvas isDrawer={isDrawer} color={color} />
+		<DrawingCanvas isDrawer={isDrawer} roomId={roomId} drawerId={currentUserId} color={color} />
 
 		{isDrawer && (
 			<DrawerPanel
 			color={color}
 			onColorChange={setColor}
-			onUndo={() => socket.emit("canvas:undo")}
-			onClear={() => socket.emit("canvas:clear")}
+			onUndo={emitCanvasUndo}
+  			onClear={emitCanvasClear}
 			/>
 		)}
       </div>

@@ -54,9 +54,9 @@ export function initSocketWithIdentify(userId: number): Promise<void> {
             });
 
 			// debug delete later
-			socket.on("youAre", (payload) => {
-			console.log("[ws] youAre:", payload);
-			});
+			// socket.on("youAre", (payload) => {
+			// console.log("[ws] youAre:", payload);
+			// });
 		});
 	}
   return identifyInFlight;
