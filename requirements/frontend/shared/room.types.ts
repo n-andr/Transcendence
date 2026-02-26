@@ -15,27 +15,27 @@ export interface Prompt {
   round: number;
 }
 
-// export interface Participant {
-//   id: number;
-//   name: string;
-//   avatarUrl?: string;
+export interface Participant {
+  id: number;
+  name: string;
+  avatarUrl?: string;
 
-//   role: "drawer" | "guesser" /*| "spectator"*/;
-//   status: "connected" | "disconnected"; // guessed correctly 
+  role: "drawer" | "guesser" /*| "spectator"*/;
+  status: "connected" | "disconnected"; // guessed correctly 
 
-//   score: number;
-// }
+  score: number;
+}
 
-// export interface RoomState {
-//   roomId: number;
+export interface RoomState {
+  roomId: number;
 
-//   phase: RoomPhase;
-//   round: number;
+  phase: RoomPhase;
+  round: number;
 
-//   timer: RoomTimer | null;
-//   prompt: Prompt | null;
+  timer: RoomTimer | null;
+  prompt: Prompt | null;
 
-//   participants: Participant[];
+  participants: Participant[];
 
-//   me: Participant;
-// }
+  me: Participant;
+}
