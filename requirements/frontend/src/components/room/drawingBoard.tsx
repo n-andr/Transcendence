@@ -86,24 +86,24 @@ export default function DrawingBoard({ onGuessCorrect }: Props) {
 
   const session = useSessionStore();
 	console.log("useSessionStore():", session);
-  useEffect(() => {
-    const container = canvasContainerRef.current;
-    if (!container) return;
+//   useEffect(() => {
+//     const container = canvasContainerRef.current;
+//     if (!container) return;
 
-    const updateSize = () => {
-      const { clientWidth, clientHeight } = container;
-      setCanvasSize({
-        width: Math.max(1, clientWidth),
-        height: Math.max(1, clientHeight),
-      });
-    };
+//     const updateSize = () => {
+//       const { clientWidth, clientHeight } = container;
+//       setCanvasSize({
+//         width: Math.max(1, clientWidth),
+//         height: Math.max(1, clientHeight),
+//       });
+//     };
 
-    updateSize();
-    const observer = new ResizeObserver(updateSize);
-    observer.observe(container);
+    //updateSize();
+//     const observer = new ResizeObserver(updateSize);
+//     observer.observe(container);
 
-    return () => observer.disconnect();
-  }, []);
+//     return () => observer.disconnect();
+//   }, []);
 
   return (
     <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">

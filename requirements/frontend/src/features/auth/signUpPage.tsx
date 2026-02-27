@@ -56,7 +56,7 @@ const setAuth = useSessionStore((s) => s.setAuth);
     setFormError("");
     setSuccessMsg("");
 
-	const setAuth = useSessionStore((s) => s.setAuth);
+	//const setAuth = useSessionStore((s) => s.setAuth);
 
     try {
       const result = await signup({
@@ -64,18 +64,18 @@ const setAuth = useSessionStore((s) => s.setAuth);
         username: username.trim(),
         password,
       });
-	  	setAuth("temp-token", {
-			id: result.id,
-			email: result.email,
-			username: result.username,
-		});
+	  	// setAuth("temp-token", {
+		// 	id: result.id,
+		// 	email: result.email,
+		// 	username: result.username,
+		// });
       // 3) show success
       setSuccessMsg(result.message || "Account created successfully 🎉");
 
 	  setAuth("temp-token", {
-		id: res.id,
-		email: res.email,
-		username: res.username,
+		id: result.id,
+		email: result.email,
+		username: result.username,
 	});
 	
       // 4) after 3s → authorize + redirect
