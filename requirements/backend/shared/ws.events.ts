@@ -4,9 +4,14 @@ export const WS_EVENTS = {
 	GUESS: "guess",
 	GUESS_UPDATE: "guessUpdate",
 	RESULTS: "results",
-	ROOM_FULL: "roomFull",
 	TURN_INFO: "turnInfo",
-	DRAWING: "drawing"
+	DRAWING: "drawing",
+	INIT_DRAWING: "init_drawing",
+	STROKE_START: "stroke:start",
+	STROKE_APPEND: "stroke:append",
+	CANVAS_CLEAR: "canvas:clear",
+	CANVAS_UNDO: "canvas:undo",
+	ROOM_FULL: "roomFull"
 } as const;
 
 export type WSEvent = typeof WS_EVENTS[keyof typeof WS_EVENTS]
