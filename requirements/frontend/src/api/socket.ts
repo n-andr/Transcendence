@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 import type { PlayerDto } from "../../shared/player.dto";
 import { WS_EVENTS } from "../../shared/ws.events";
 import type { ResultsPayload, TurnInfoPayload } from "../../shared/ws.payloads";
+import { useSessionStore } from "../state/sessionStore";
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? "http://localhost:3000";
 
@@ -94,9 +95,25 @@ export async function joinRoom(userId: number) {
 
 export function onTurnInfo(callback: (payload: TurnInfoPayload) => void) {
   console.log("[ws] subscribing to turn_info");
-  // use a stored handler here so we can unsubscribe using the exact same input 
   const handler = (payload: TurnInfoPayload) => {
     console.log("[ws] turn_info received:", payload);
+
+    const currentUserId = useSessionStore.getState().user?.id;
+    useSessionStore.getState().setRoom(payload.room_id);
+    if (currentUserId === undefined) {
+      console.warn("[ws] userId not set in store yet");
+      callback(payload);
+      return;
+    }
+
+    if (payload.drawer === currentUserId) {
+      console.log("[ws] I am the drawer this turn!");
+      useSessionStore.getState().setRole("drawer");
+    } else {
+      console.log("[ws] I am a guesser this turn. i am user " + currentUserId + " drawer is " + payload.drawer);
+      useSessionStore.getState().setRole("guesser");
+    }
+
     callback(payload);
   };
   socket.on(WS_EVENTS.TURN_INFO, handler);

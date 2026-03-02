@@ -19,6 +19,7 @@ export default function GamePage() {
   
   // 1. get userId from storage
   const user = useSessionStore((s) => s.user);
+  const logout = useSessionStore((s) => s.logout);
   const userId = user?.id; // use user id from storage
   if (!userId) {
     return <div>No user found</div>; // handle an error
@@ -41,14 +42,30 @@ export default function GamePage() {
     let unsubRoomFull = () => {};
     let unsubStartGame = () => {};
     let unsubResults = () => {};
+    let connectTimeout: number | undefined;
+
+    const clearConnectTimeout = () => {
+      if (connectTimeout) {
+        window.clearTimeout(connectTimeout);
+        connectTimeout = undefined;
+      }
+    };
 
     (async () => {
       try {
         setWsState("connecting");
 
+        connectTimeout = window.setTimeout(() => {
+          console.log("[ws] connect timeout -> clearing stale session");
+          setWsState("error");
+          socket.disconnect();
+          logout();
+        }, 8000);
+
         // 2. subscribe to BE pushes before joinRoom so we don't miss the first turnInfo event
         unsubTurnInfo = onTurnInfo((payload) => {
           console.log("[ws] turnInfo:", payload);
+          clearConnectTimeout();
 
           if (payload.room_id === -1) {
             setWsState("full");
@@ -67,6 +84,7 @@ export default function GamePage() {
 
         unsubStartGame = onStartGame((payload) => {
           console.log("[ws] start_game:", payload);
+          clearConnectTimeout();
           setMembers(dedupePlayers(payload.members));
           setRound(payload.round);
           setTurn(payload.turn);
@@ -75,11 +93,13 @@ export default function GamePage() {
 
         unsubRoomFull = onRoomFull(() => {
           console.log("[ws] room full");
+          clearConnectTimeout();
           setWsState("full");
         });
 
         unsubResults = onResults((payload) => {
           console.log("[ws] results:", payload);
+          clearConnectTimeout();
           if (payload.final) {
             setWsState("finished");
           }
@@ -90,18 +110,20 @@ export default function GamePage() {
         console.log("[gameRoom] joinRoom successful");
       } catch (e) {
         console.error(e);
+        clearConnectTimeout();
         setWsState("error");
       }
     })();
 
     return () => {
+      clearConnectTimeout();
       unsubTurnInfo();
       unsubRoomFull();
       unsubStartGame();
       unsubResults();
       socket.disconnect();
     };
-  }, [userId]);
+  }, [userId, logout]);
 
   // timer which makes sure the waiting panel disappears after three seconds
   useEffect(() => {
