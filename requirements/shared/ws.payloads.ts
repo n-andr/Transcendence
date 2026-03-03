@@ -34,6 +34,23 @@ export interface ResultsPayload {
 	time_to_display: number;
 }
 
+export interface FriendListPayload {
+	room_id: number;
+	friends: string[];
+}
+
+export interface AddFriendPayload {
+	room_id: number;
+	newFriend: string;
+	player: number;
+}
+
+export interface RemoveFriendPayload {
+	room_id: number;
+	removeFriend: string;
+	player: number;
+}
+
 export interface DrawingPayload {
 	room_id: number;
 	drawer: Number;

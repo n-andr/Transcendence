@@ -29,4 +29,48 @@ export class UsersService {
 			where: { id },
 		});
 	}
+	async getUserByNickname(nickname: string): Promise<User | null> {
+		console.log(`I am fetching User data by nickname: ${nickname}`);
+		return this.prisma.user.findUnique({
+			where: { nickname },
+		});
+	}
+	async addFriend(userID: number, friendID: number) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userID },
+			select: { friends: true },
+		});
+
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		const friends = user.friends ?? [];
+
+		if (!friends.includes(friendID)) {
+			await this.prisma.user.update({
+				where: { id: userID },
+				data: { friends: [...friends, friendID] },
+			});
+		}
+	}
+	async removeFriend(userID: number, friendID: number) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userID },
+			select: { friends: true },
+		});
+
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		const friends = user.friends ?? [];
+
+		if (friends.includes(friendID)) {
+			await this.prisma.user.update({
+				where: { id: userID },
+				data: { friends: friends.filter((id: number) => id !== friendID) },
+			});
+		}
+	}
 }

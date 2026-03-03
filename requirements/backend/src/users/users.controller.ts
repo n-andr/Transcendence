@@ -17,7 +17,7 @@ export class UsersController {
 	) {
 		return this.usersService.createUser(nickname, email, password);
 	}
-	
+
 	@Get('email/:email')
 	getUser(@Param('email') email: string) {
 		return this.usersService.getUser(email);
@@ -27,5 +27,14 @@ export class UsersController {
 	getUserById(@Param('id', ParseIntPipe) id: number) {
 		return this.usersService.getUserById(id);
 	}
-	
+
+	@Get('nickname/:nickname')
+	getUserByNickname(@Param('nickname') nickname: string) {
+		return this.usersService.getUserByNickname(nickname);
+	}
+
+	@Get('me')
+	getUserProfile(@Body() userId: number) {
+		return this.usersService.getUserById(userId);
+	}
 }

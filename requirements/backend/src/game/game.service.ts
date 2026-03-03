@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Room } from 'src/rooms/room.class';
 //import { RoomsService } from 'src/rooms/rooms.service';
-import { GuessPayload, GuessUpdatePayload, ResultsPayload, TurnInfoPayload } from 'src/websocket/dtos/ws.payloads';
-import { Server } from 'socket.io'//server allows emiting from anyhwere
+import { FriendListPayload, GuessPayload, GuessUpdatePayload, ResultsPayload, TurnInfoPayload } from 'src/websocket/dtos/ws.payloads';
+import { Server, Socket } from 'socket.io'//server allows emiting from anyhwere
 import { WS_EVENTS } from 'src/websocket/dtos/ws.events';
 import { WordsService } from 'src/words/words.service';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { WebsocketGateway } from 'src/websocket/websocket.gateway';
+import { PlayerDto } from 'src/websocket/dtos/player.dto';
 
 @Injectable()
 export class GameService {
@@ -16,14 +17,14 @@ export class GameService {
 	private readonly roomsService: RoomsService,
 	//private readonly gateway: WebsocketGateway,
 	) {}
-	
+
 
 	async startTurn(room: Room, server: Server) {
 		if (room.round === 0) this.increaseRound(room);
 		else this.increaseTurn(room);
 		console.log("USING WORD SERVICE NOW");
 		const wordEntity = await this.wordsService.getRandomWord(room.usedWordIds);
-		
+
 		room.word = wordEntity.text;
 		room.word_length = room.word!.length;
 		room.usedWordIds.push(wordEntity.id);
@@ -51,10 +52,52 @@ export class GameService {
 		}
 		server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, payload);
 		this.logger.log(`Room ${room.id} round.turn ${room.round}.${room.turn}, drawerId: ${room.drawer} draws ${room.word}`);
+		this.sendFriendsToAll(room, server);
 		room.timeout = setTimeout(() => {
 			room.timeout = undefined;
 			this.endOfTurn(room, server);
 		}, payload.time_to_display);
+	}
+
+	sendFriendsToAll(room: Room, server: Server) {
+		const players = room.players;
+
+		const idToNickname = new Map<number, string>();
+		for (const p of players) {
+			idToNickname.set(p.userId, p.nickname);
+		}
+
+		for (const p of players) {
+			const friendsIds: number[] = (p.friends ?? []);
+			friendsIds.filter((friendId: number) => idToNickname.has(friendId));
+			const friendsInRoom: string[] =
+			friendsIds.map((friendId) => idToNickname.get(friendId)!);
+
+			const payload: FriendListPayload = {
+				room_id: room.id,
+				friends: friendsInRoom,
+			}
+			server.to(p.userId.toString()).emit(WS_EVENTS.FRIEND_LIST, payload);
+		}
+	}
+
+	getFriends(userID: number, room: Room): string[] {
+		const user = room.players.find((user: PlayerDto) => user.userId === userID);
+		if (!user) {
+			throw new Error("Player not found");
+		}
+
+		const players = room.players;
+		const idToNickname = new Map<number, string>();
+		for (const p of players) {
+			idToNickname.set(p.userId, p.nickname);
+		}
+
+		const friendsIds: number[] = (user.friends ?? []);
+		friendsIds.filter((friendId: number) => idToNickname.has(friendId));
+		const friendsInRoom: string[] =
+		friendsIds.map((friendId) => idToNickname.get(friendId)!);
+		return friendsInRoom;
 	}
 
 	increaseTurn(room: Room): void {
@@ -94,7 +137,7 @@ export class GameService {
 			player.score += 1;//dummy for point gaining logic
 			room.correctGuesses.add(player.userId);
 		}
-		
+
 		const response: GuessUpdatePayload = {
 			guesser_id: payload.guesser_id,
 			guess: iscorrect ? null : payload.guess,//only send wrong guesses

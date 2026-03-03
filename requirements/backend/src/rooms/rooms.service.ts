@@ -79,6 +79,7 @@ export class RoomsService {
 			userId: newuserId,
 			nickname: user.nickname,
 			score: 0,
+			friends: [],
 		}
 		for (const room of this.rooms.values()) {
 			if (room.players.length < room.maxPlayers) {
