@@ -33,8 +33,10 @@ export class UsersController {
 		return this.usersService.getUserByNickname(nickname);
 	}
 
-	@Get('me')
-	getUserProfile(@Body() userId: number) {
+	@Post('me')
+	getUserProfile(@Body("userId", ParseIntPipe) userId: number) {
+		console.log(`Received request for user profile with userId: ${userId}`);
+		console.log(`User profile data:`, this.usersService.getUserById(userId));
 		return this.usersService.getUserById(userId);
 	}
 }
