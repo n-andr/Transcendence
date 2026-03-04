@@ -14,6 +14,11 @@ export default defineConfig({
     port: 5173,
 	proxy: {
 			"/auth": "http://backend:3000", // this is the servers address
+			"/users": "http://backend:3000",
+	// 		"/socket.io": {
+	// 			target: "http://localhost:3000",
+	// 			ws: true,
+    //   },
 		},
   }
 })
