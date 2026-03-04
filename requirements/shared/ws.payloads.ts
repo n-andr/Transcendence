@@ -51,10 +51,42 @@ export interface RemoveFriendPayload {
 	player: number;
 }
 
-export interface DrawingPayload {
-	room_id: number;
-	drawer: Number;
-	coordinate_x: number;
-	coordinate_y: number;
-	color: `#${string}`// e.g. "#ff00ff"
+// export interface DrawingPayload {
+// 	room_id: number;
+// 	drawer: Number;
+// 	coordinate_x: number;
+// 	coordinate_y: number;
+// 	color: `#${string}`// e.g. "#ff00ff"
+// }
+
+// Normalized point in range [0..1]
+export type Point = { x: number; y: number };
+
+export type Stroke = {
+  id: string;
+  color: `#${string}`;
+  width: number;
+  points: Point[];
+};
+
+
+// Used for STROKE_START (full stroke info).
+export interface DrawPayload {
+  room_id: number;
+  drawer: number;
+  strokes: Stroke[];
+}
+
+export interface InitDrawingPayload {
+  room_id: number;
+  strokes: Stroke[];
+}
+
+// Low-load append: send ONLY delta points + stroke id.
+export interface StrokeAppendPayload {
+  room_id: number;
+  id: string;
+  points: Point[];
+  // optional for debugging / future ordering guarantees:
+  // seq?: number;
 }

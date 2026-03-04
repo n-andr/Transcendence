@@ -2,7 +2,7 @@
 import { io, Socket } from "socket.io-client";
 import type { PlayerDto } from "../../shared/player.dto";
 import { WS_EVENTS } from "../../shared/ws.events";
-import type { ResultsPayload, TurnInfoPayload } from "../../shared/ws.payloads";
+import type { ResultsPayload, TurnInfoPayload, FriendListPayload, RemoveFriendPayload, AddFriendPayload } from "../../shared/ws.payloads";
 import { useSessionStore } from "../state/sessionStore";
 
 const WS_URL = import.meta.env.VITE_WS_URL ?? "http://localhost:3000";
@@ -141,11 +141,40 @@ export function onResults(callback: (payload: ResultsPayload) => void) {
   return () => socket.off(WS_EVENTS.RESULTS, callback);
 }
 
-export function onDrawing(callback: (payload: any) => void) {
-  socket.on(WS_EVENTS.DRAWING, callback);
-  return () => socket.off(WS_EVENTS.DRAWING, callback);
+// export function onDrawing(callback: (payload: any) => void) {
+//   socket.on(WS_EVENTS.DRAWING, callback);
+//   return () => socket.off(WS_EVENTS.DRAWING, callback);
+// }
+
+export function friendList(callback: (payload: FriendListPayload) => void) {
+  socket.on(WS_EVENTS.FRIEND_LIST, callback);
+  console.log("[ws] subscribed to friendList updates");
+  return () => socket.off(WS_EVENTS.FRIEND_LIST, callback);
 }
 
+//export function addFriend(callback: (payload: AddFriendPayload) => void) {
+//   socket.on(WS_EVENTS.ADD_FRIEND, callback);
+//   return () => socket.off(WS_EVENTS.ADD_FRIEND, callback);
+// }
+
+// export function removeFriend(callback: (payload: RemoveFriendPayload) => void) {
+//   socket.on(WS_EVENTS.REMOVE_FRIEND, callback);
+//   return () => socket.off(WS_EVENTS.REMOVE_FRIEND, callback);
+// }
+
+export function emitAddFriend(payload: AddFriendPayload) {
+	console.log("[ws] emitAddFriend called with payload:", payload);
+  socket.emit(WS_EVENTS.ADD_FRIEND, payload);
+}
+
+export function emitRemoveFriend(payload: RemoveFriendPayload) {
+	console.log("[ws] emitRemoveFriend called with payload:", payload);
+  socket.emit(WS_EVENTS.REMOVE_FRIEND, payload);
+}
+
+
+
+//remove later
 export function testSetDrawer(roomId: number, drawerId: number) {
   console.log("[ws] test:setDrawer - room:", roomId, "drawer:", drawerId);
   socket.emit('test:setDrawer', { room_id: roomId, drawer_id: drawerId });

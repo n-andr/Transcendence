@@ -53,7 +53,6 @@ export type Stroke = {
 };
 
 
-// "DrawPayload" name kept for compatibility with existing imports.
 // Used for STROKE_START (full stroke info).
 export interface DrawPayload {
   room_id: number;
@@ -73,4 +72,21 @@ export interface StrokeAppendPayload {
   points: Point[];
   // optional for debugging / future ordering guarantees:
   // seq?: number;
+}
+
+export interface FriendListPayload {
+	room_id: number;
+	friends: string[];
+}
+
+export interface AddFriendPayload {
+	room_id: number;
+	newFriend: string;
+	player: number;
+}
+
+export interface RemoveFriendPayload {
+	room_id: number;
+	removeFriend: string;
+	player: number;
 }
