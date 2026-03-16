@@ -238,6 +238,7 @@ export class WebsocketGateway {
 			round: room.round,
 			turn: room.turn,
 			players: room.players,
+			spectators: room.spectators,
 			time_to_display: 60_000,
 		};
 
