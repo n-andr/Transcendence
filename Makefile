@@ -1,9 +1,8 @@
-RESET =				\033[0m
-BOLD =				\033[1m
-GREEN =				\033[32m
-YELLOW =			\033[33m
-RED :=				\033[91m
-
+RESET =             \033[0m
+BOLD =              \033[1m
+GREEN =             \033[32m
+YELLOW =            \033[33m
+RED :=              \033[91m
 DOCKER_COMPOSE_YML := ./docker-compose.yml
 BACKEND_SHARED := ./requirements/backend/shared
 FRONTEND_SHARED := ./requirements/frontend/shared
@@ -20,7 +19,7 @@ sync-shared:
 build: sync-shared
 	@echo "$(GREEN)Building Images with $(RESET)"
 	@echo "$(DOCKER_COMPOSE_YML)"
-	docker compose -f $(DOCKER_COMPOSE_YML) build
+	docker compose -f $(DOCKER_COMPOSE_YML) build --no-cache
 
 up:
 	@echo "$(GREEN)Starting containers in detached mode...$(RESET)"
@@ -31,14 +30,15 @@ school: schoolclean build
 	docker compose -f $(DOCKER_COMPOSE_YML) up
 
 clean:
+	@echo "$(GREEN)Resetting database...$(RESET)"
+	@docker compose -f $(DOCKER_COMPOSE_YML) exec backend npx prisma migrate reset --force 2>/dev/null || true
 	@echo "$(GREEN)Stopping all running containers...$(RESET)"
-	@docker compose -f $(DOCKER_COMPOSE_YML) down
-	@echo "$(GREEN)Containers stopped.$(RESET)"
+	@docker compose -f $(DOCKER_COMPOSE_YML) down -v
+	@echo "$(GREEN)Containers and volumes stopped.$(RESET)"
 
 fclean: clean
-	@echo "$(GREEN)Removing Docker volumes...$(RESET)"
-	@echo "$(GREEN)Removing all images$(RESET)"
-	docker compose down --rmi all --volumes --remove-orphans
+	@echo "$(GREEN)Removing all images...$(RESET)"
+	docker compose -f $(DOCKER_COMPOSE_YML) down --rmi all --volumes --remove-orphans
 	@echo "$(GREEN)Full cleanup done.$(RESET)"
 
 schoolclean: clean fclean
@@ -63,9 +63,6 @@ cleanhome:
 fcleanhome: clean
 	@echo "$(GREEN)Removing Docker volumes...$(RESET)"
 	docker-compose -f $(DOCKER_COMPOSE_YML) down -v
-
-#docker system prune -af
-#prune -af might be a bad idea outside of a VM...
 
 rehome: fcleanhome home
 

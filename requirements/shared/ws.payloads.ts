@@ -60,8 +60,11 @@ export interface ProfilePagePayload {
 
 export interface DrawingPayload {
 	room_id: number;
-	friends: string[];
-}
+	drawer: Number;
+	coordinate_x: number;
+	coordinate_y: number;
+	color: `#${string}`// e.g. "#ff00ff"
+}	
 
 export type Point = { x: number; y: number };
 export type Stroke = {

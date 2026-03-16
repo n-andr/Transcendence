@@ -16,7 +16,7 @@ export class UsersService {
 		});
 	}
 	getUser(email: string): Promise<User | null> {
-		console.log(`I am fetching User data by email: ${email}`);
+		console.log(`I am retrieving User data by email: ${email}`);
 		//call database
 		//return {nickname, email: 'Dummy@example.com', password: 'secret' };
 		return this.prisma.user.findUnique({
@@ -24,7 +24,7 @@ export class UsersService {
 		});
 	}
 	async getUserById(id: number): Promise<User | null> {
-		console.log(`I am fetching User data by ID: ${id}`);
+		console.log(`I am retrieving User data by ID: ${id}`);
 		return this.prisma.user.findUnique({
 			where: { id },
 		});

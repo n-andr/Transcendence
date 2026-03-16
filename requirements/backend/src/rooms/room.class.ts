@@ -5,6 +5,7 @@ import type { Stroke } from "src/websocket/dtos/ws.payloads"
 /*Where all room related variables are stored. This was purely used to store data.
 No thought has been put into weither things shoudl be public or whatever.*/
 export class Room {
+	public state: 'lobby' | 'playing' | 'finished';	
 	public id: number
     public round: number//0 before start
 	public maxRounds: number
@@ -14,6 +15,7 @@ export class Room {
 	public drawer: number//userid
 	public word_length: number//-1 outsie of turn
 	public players: PlayerDto[] = [];
+	public spectators: PlayerDto[] = [];
 	public strokes: Stroke[] = [];
 	correctGuesses: Set<number> = new Set();//user ids that guessed correctly
 	timeout?: NodeJS.Timeout;

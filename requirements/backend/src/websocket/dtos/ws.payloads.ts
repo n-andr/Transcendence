@@ -7,12 +7,13 @@ export interface JoinRoomPayload {
 export interface TurnInfoPayload {
 	room_id: number;
 	drawer: number;
-	word: string | null;
-	word_length: number;
+	word: string | null; // dont give to spectator&player
+	word_length: number; //not for spectator
 	round: number;
 	turn: number;
 	players: PlayerDto[];
-	time_to_display: number;
+	spectators: PlayerDto[];
+	time_to_display: number; // ? 
 }
 
 export interface GuessPayload {

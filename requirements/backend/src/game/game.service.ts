@@ -1,14 +1,18 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConsoleLogger, Injectable, Logger } from '@nestjs/common';
 import { Room } from 'src/rooms/room.class';
 //import { RoomsService } from 'src/rooms/rooms.service';
 import { FriendListPayload, GuessPayload, GuessUpdatePayload, ResultsPayload, TurnInfoPayload } from 'src/websocket/dtos/ws.payloads';
 import { Server, Socket } from 'socket.io'//server allows emiting from anyhwere
+import { GuessPayload, GuessUpdatePayload, ResultsPayload, TurnInfoPayload } from 'src/websocket/dtos/ws.payloads';
+import { Server } from 'socket.io'//server allows emiting from anyhwere
 import { WS_EVENTS } from 'src/websocket/dtos/ws.events';
 import { WordsService } from 'src/words/words.service';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { WebsocketGateway } from 'src/websocket/websocket.gateway';
 import { PlayerDto } from 'src/websocket/dtos/player.dto';
 import { UsersService } from 'src/users/users.service';
+import { TurnEmitService } from 'src/websocket/turnemit.service';
+import { TURN_DURATION, RESULTS_DURATION } from './game.constants';
 
 @Injectable()
 export class GameService {
@@ -18,12 +22,23 @@ export class GameService {
 	private readonly roomsService: RoomsService,
 	private readonly usersService: UsersService,
 	//private readonly gateway: WebsocketGateway,
+	private readonly turnEmitService: TurnEmitService
 	) {}
 
 
 	async startTurn(room: Room, server: Server) {
+		console.log(`Room ${room.id} at start of turn ${room.turn}: players ${room.players.map(p => p.userId)}, spectators ${room.spectators.map(s => s.userId)}`);
+
+		//clear drawing board for new turn
+		this.roomsService.clearStrokes(room.id);
+		server.to(`room-${room.id}`).emit(WS_EVENTS.INIT_DRAWING, {
+			room_id: room.id,
+			strokes: [],
+    	});
+
 		if (room.round === 0) this.increaseRound(room);
 		else this.increaseTurn(room);
+
 		console.log("USING WORD SERVICE NOW");
 		const wordEntity = await this.wordsService.getRandomWord(room.usedWordIds);
 
@@ -31,35 +46,17 @@ export class GameService {
 		room.word_length = room.word!.length;
 		room.usedWordIds.push(wordEntity.id);
 		console.log("usedWordIds:", room.usedWordIds);
-		room.drawer = room.players[room.turn-1].userId;
-		const socketRoom = `room-${room.id}`;
-		this.roomsService.clearStrokes(room.id);
-    	// server.to(socketRoom).emit(WS_EVENTS.CANVAS_CLEAR);
-		// this.gateway.emitFullDrawingState(room.id);
-		const strokes = this.roomsService.getStrokes(room.id);
-		server.to(socketRoom).emit(WS_EVENTS.INIT_DRAWING, {
-		room_id: room.id,
-		strokes,
-		});
+		room.drawer = room.players[(room.turn-1) % room.players.length].userId; //modulo to always pick an existing player index even when others disconnect.
 
-		const payload: TurnInfoPayload = {
-			room_id: room.id,
-			drawer: room.drawer,
-			word: room.word,
-			word_length: room.word_length,
-			round: room.round,
-			turn: room.turn,
-			players: room.players,
-			time_to_display: 20_000,//20s for console test
-		}
-		server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, payload);
+		const payload = this.turnEmitService.emitTurnInfo(room, server);
+
 		this.logger.log(`Room ${room.id} round.turn ${room.round}.${room.turn}, drawerId: ${room.drawer} draws ${room.word}`);
 		this.sendFriendsToAll(room, server);
 		room.timeout = setTimeout(() => {
 			room.timeout = undefined;
 			this.endOfTurn(room, server);
-		}, payload.time_to_display);
-	}
+		}, TURN_DURATION);
+	}	
 
 	sendFriendsToAll(room: Room, server: Server) {
 		const players = room.players;
@@ -109,7 +106,6 @@ export class GameService {
 			return;
 		}
 		room.turn += 1;
-		//this.startTurn(room);
 	}
 
 	increaseRound(room: Room): void {
@@ -119,8 +115,8 @@ export class GameService {
 			return;
 		}
 		room.turn = 1;
+		room.state = "playing";
 		this.logger.log(`Room ${room.id} started round ${room.round}`);
-		//this.startTurn(room);
 		return;
 	}
 
@@ -156,28 +152,22 @@ export class GameService {
 		const drawer = room.players.find(p => p.userId === room.drawer);
 		if (drawer) drawer.score += room.correctGuesses.size;//dummy for points logic for drawer
 		room.correctGuesses.clear();//prep for next turn
-		let isFinal = false;
-		if (room.round === room.maxRounds && room.turn === room.players.length) isFinal = true;
-		const response: ResultsPayload = {
-			final: isFinal,
-			solution: room.word!,
-			time_to_display: 3_000,
-			players: room.players,
-		};
-		const socketRoom = `room-${room.id}`;
-		server.to(socketRoom).emit(WS_EVENTS.RESULTS, response);
-		room.timeout = setTimeout(() => {
-			if (!isFinal) {
-				//start next turn after timeout
-				room.timeout = undefined;
-				this.startTurn(room, server);
-			}
-		}, response.time_to_display);
-		if (isFinal) {
-			this.roomsService.removeAllPlayers(room.id);
-			room.usedWordIds.length = 0;
-			room.round = 0;
-			room.turn = 0;
+
+		// admit spectators if there are any
+		this.roomsService.admitSpectators(room.id);
+
+		// check if there are enough players to continue
+		if (room.players.length < 3) {
+    		console.log(`Room ${room.id} has to little players, aborting startTurn`);
+			this.gameOver(room, server, true);
+		}
+		else if (room.round === room.maxRounds && room.turn === room.players.length) {
+			console.log(`Room ${room.id} finished the game`);
+			this.gameOver(room, server, true);
+		}
+		else {
+			console.log(`Room ${room.id} finished a turn`);
+			this.gameOver(room, server, false);
 		}
 	}
 
@@ -189,5 +179,30 @@ export class GameService {
 			room.timeout = undefined;
 		}
 		this.endOfTurn(room, server);
+	}
+
+	gameOver(room: Room, server: Server, endgame: boolean) {
+		const response: ResultsPayload = {
+			final: endgame,
+			solution: room.word!,
+			time_to_display: RESULTS_DURATION,
+			players: room.players,
+		};
+		const socketRoom = `room-${room.id}`;
+		server.to(socketRoom).emit(WS_EVENTS.RESULTS, response);
+
+		if (endgame) {
+			this.roomsService.removeAllUsers(room.id);
+				room.usedWordIds.length = 0;
+				room.round = 0;
+				room.turn = 0;
+				room.state = 'lobby';
+		}
+		else {
+			room.timeout = setTimeout(() => {
+				room.timeout = undefined;
+				this.startTurn(room, server);
+			}, response.time_to_display);
+		}
 	}
 }

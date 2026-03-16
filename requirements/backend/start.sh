@@ -17,4 +17,5 @@ set -e
 
 npx prisma generate
 
-exec npm run start:dev
+# Run compiled JS instead of ts-node
+exec node dist/src/main.js

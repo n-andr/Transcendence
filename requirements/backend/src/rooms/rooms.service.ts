@@ -5,40 +5,33 @@ import type { PlayerDto } from "src/websocket/dtos/player.dto";
 import type { Stroke } from "src/websocket/dtos/ws.payloads"
 import { UsersService } from "src/users/users.service";
 import { UserScalarFieldEnum } from "src/generated/internal/prismaNamespace";
-//import { GameService } from "src/game/game.service";
-import { RoomsModule } from "./rooms.module";
 
 
 @Injectable()
 export class RoomsService {
 	private readonly logger = new Logger(RoomsService.name);
-	constructor (
-		private readonly usersService: UsersService,
-		//private readonly gameService: GameService,
-	) {}
-
-    private rooms = new Map<number, Room>();
+	private rooms = new Map<number, Room>();
 	private userToRoom = new Map<number, number>();//userid -> roomid
 	private nextId = 0;
 
+	constructor(private readonly usersService: UsersService) {}
+ 
 	onModuleInit() {
 		this.logger.log("Initializing RoomsService ...");
-		//const noRoom = this.createRoom(0);
 		const room = this.createRoom(5);
 		console.log("Default room created");
 		this.logger.log(`Room created on startup: id=${room.id}, maxPlayers=${room.maxPlayers}`);
         this.logger.log(`Total rooms after startup: ${this.rooms.size}`);
 	}
 
-	//private userToRoom = new Map<number, number>()
 	createRoom(maxPlayers: number): Room {
         const room = new Room();
+		room.state = "lobby";
 		room.id = this.nextId++;
 		room.round = 0;
 		room.turn = 0;
 		room.maxRounds = 2;//2 for testing
 		room.maxPlayers = maxPlayers;
-		//room.active = false;
 		this.rooms.set(room.id, room);//add room to map
 		this.logger.log(`Room created: id=${room.id}`);
 		return room;
@@ -52,78 +45,94 @@ export class RoomsService {
 	getAllRooms(): Room[] {
 		return Array.from(this.rooms.values());
 	}
-	//unnecessary?
+
 	deleteRoom(roomId: number): void {
 		this.rooms.delete(roomId);
 		this.logger.log(`Room deleted: id=${roomId}`);
 	}
 
-	async addPlayerToFirstAvailableRoom(newuserId: number): Promise<Room> {
+	async findAvailableRoom(newUserId: number): Promise<Room> {
 		//keep users from joining when already in any room
-		// if (this.userToRoom.has(newuserId)) {
-		// 	const existingRoomId = this.userToRoom.get(newuserId)!;
-		// 	return this.rooms.get(existingRoomId)!;
-		// }
+		if (this.userToRoom.has(newUserId)) {
+			const existingRoomId = this.userToRoom.get(newUserId)!;
+			return this.rooms.get(existingRoomId)!;
+		}
 
-		const user = await this.usersService.getUserById(newuserId);
+		for (const room of this.rooms.values()) {
+			if (room.players.length < room.maxPlayers) {
+				return room;
+			}
+		}
+	    // no room exists → create one automatically
+		const newRoom = this.createRoom(5);
+		this.logger.log('Created new room because none available');
+		return newRoom;
+	}
+
+	async addUser(newUserId: number, roomId: number, state: string) {
+		const user = await this.usersService.getUserById(newUserId);
 		if (!user) {
 			throw new Error("User not found");
 		}
 
 		// Double-check after async call to avoid races from duplicate join requests.
-		if (this.userToRoom.has(newuserId)) {
+		if (this.userToRoom.has(newUserId)) {
 			throw new Error("User denied! (Expected behavior in React dev mode)");
 		}
 
+		const room = this.getRoom(roomId);
+		if (!room) return;
 		const player: PlayerDto = {
-			userId: newuserId,
+			userId: newUserId,
 			nickname: user.nickname,
 			score: 0,
 			friends: [],
 		}
-		for (const room of this.rooms.values()) {
-			if (room.players.length < room.maxPlayers) {
-				room.players.push(player);
-				this.userToRoom.set(newuserId, room.id);
-				console.log(`User ${player.userId} ${player.nickname} joined room ${room.id}`);
-				return room;
-			}
-		}
-		//no room available
-		console.log('NO room available');
-		const dummyRoom = new Room();
-		dummyRoom.id = -1;
-		dummyRoom.round = 0;
-		dummyRoom.turn = 0;
-		dummyRoom.maxPlayers = 0;
-		dummyRoom.word = null;
-		dummyRoom.drawer = -1;
-		dummyRoom.word_length = -1;
-		dummyRoom.players = [];
-		return dummyRoom;
+		if (state === 'player' && room.players.length < room.maxPlayers)
+			room.players.push(player);
+		else
+			room.spectators.push(player);
+		this.userToRoom.set(newUserId, room.id);
+		console.log(`User ${player.userId} ${player.nickname} joined room ${room.id} as ${state}`);
 	}
-
-	removePlayer(userId: number) {
-		console.log('remove Player', userId);
+	
+	// NB Remove player adjusted to remove user, so that it handles both removing players and spectators
+	removeUser(userId: number) {
 		const roomId = this.userToRoom.get(userId);
-		// if (!roomId) return ;
 		if (roomId === undefined) return;
 		const room = this.rooms.get(roomId);
-		console.log('from room', roomId);
 		if (!room) return;
 		room.players = room.players.filter(p => p.userId !== userId);
+		room.spectators = room.spectators.filter( p => p.userId !== userId);
 		this.userToRoom.delete(userId);
-		console.log('player', userId, 'removed from Room', roomId);
-		//if < min players, end game early, send final results
+		console.log('User', userId, 'removed from Room', roomId);
 	}
 
-	removeAllPlayers(roomId: number) {
-		console.log('remove all players from room', roomId);
+	admitSpectators(roomId: number) {
+		const room = this.getRoom(roomId);
+		if (!room)
+			return;
+		while (room.spectators.length > 0 && room.players.length < room.maxPlayers)
+		{
+			const spectator = room.spectators.shift()!;
+			room.players.push(spectator);
+		}
+		if (room.spectators.length > 0) //debug
+			console.log('Players filled, number of spectators: ', room.spectators.length); //debug
+		else //debug
+			console.log('All spectators have joined'); //debug
+	}
+
+	removeAllUsers(roomId: number) {
+		console.log('remove all players from room ', roomId);
 		const room = this.rooms.get(roomId);
 		if (!room) return;
 		// remove user → room mappings
 		for (const player of room.players) {
 			this.userToRoom.delete(player.userId);
+		}
+		for (const spectator of room.spectators) {
+			this.userToRoom.delete(spectator.userId);
 		}
 		// clear players array (keep reference)
 		room.players.length = 0;
@@ -148,7 +157,7 @@ export class RoomsService {
         const room = this.getRoom(roomId);
         if (!room)
             return;
-        room.strokes = [];
+        room.strokes.length = 0;
     }
 
     popStroke(roomId: number) {
@@ -158,4 +167,9 @@ export class RoomsService {
 		room.strokes.pop();
     }
 
+	isUserInRoom(userId: number, roomId: number): boolean {
+    return this.userToRoom.get(userId) === roomId;
 }
+
+}
+
