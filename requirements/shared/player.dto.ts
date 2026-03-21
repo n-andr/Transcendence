@@ -3,4 +3,5 @@ export interface PlayerDto {
 	nickname: string;
 	score: number;
 	friends: number[];
+	role: string;
 }
