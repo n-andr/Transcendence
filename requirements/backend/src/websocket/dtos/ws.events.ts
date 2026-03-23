@@ -1,5 +1,6 @@
 export const WS_EVENTS = {
 	JOIN_ROOM: "joinRoom",
+	WATCH_GAME: "watchGame",
 	//ROOM_STATE: "roomState",
 	GUESS: "guess",
 	GUESS_UPDATE: "guessUpdate",
