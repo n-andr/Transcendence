@@ -15,7 +15,7 @@ export class RoomsService {
 	private nextId = 0;
 
 	constructor(private readonly usersService: UsersService) {}
- 
+
 	onModuleInit() {
 		this.logger.log("Initializing RoomsService ...");
 		const room = this.createRoom(5);
@@ -69,7 +69,7 @@ export class RoomsService {
 		return newRoom;
 	}
 
-	async addUser(newUserId: number, roomId: number, state: string) {
+	async addUser(newUserId: number, roomId: number, state: string, role: string) {
 		const user = await this.usersService.getUserById(newUserId);
 		if (!user) {
 			throw new Error("User not found");
@@ -87,6 +87,7 @@ export class RoomsService {
 			nickname: user.nickname,
 			score: 0,
 			friends: [],
+			role: role,
 		}
 		if (state === 'player' && room.players.length < room.maxPlayers)
 			room.players.push(player);
@@ -95,7 +96,7 @@ export class RoomsService {
 		this.userToRoom.set(newUserId, room.id);
 		console.log(`User ${player.userId} ${player.nickname} joined room ${room.id} as ${state}`);
 	}
-	
+
 	// NB Remove player adjusted to remove user, so that it handles both removing players and spectators
 	removeUser(userId: number) {
 		const roomId = this.userToRoom.get(userId);
@@ -112,15 +113,16 @@ export class RoomsService {
 		const room = this.getRoom(roomId);
 		if (!room)
 			return;
-		while (room.spectators.length > 0 && room.players.length < room.maxPlayers)
+		const waitingPlayers = (room.spectators ?? []).filter(p => p.role == 'player')
+		while (waitingPlayers.length > 0 && room.players.length < room.maxPlayers)
 		{
-			const spectator = room.spectators.shift()!;
+			const spectator = waitingPlayers.shift()!;
 			room.players.push(spectator);
 		}
-		if (room.spectators.length > 0) //debug
-			console.log('Players filled, number of spectators: ', room.spectators.length); //debug
+		if (waitingPlayers.length > 0) //debug
+			console.log('Players filled, number of waiting players: ', waitingPlayers.length); //debug
 		else //debug
-			console.log('All spectators have joined'); //debug
+			console.log('All waiting players have joined'); //debug
 	}
 
 	removeAllUsers(roomId: number) {
@@ -172,4 +174,3 @@ export class RoomsService {
 }
 
 }
-

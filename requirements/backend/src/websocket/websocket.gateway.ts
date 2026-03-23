@@ -106,9 +106,9 @@ export class WebsocketGateway {
 
 		try {
 			if (room.state === 'lobby' && room.players.length < room.maxPlayers)
-				await this.roomService.addUser(payload.user_id, room.id, 'player')
+				await this.roomService.addUser(payload.user_id, room.id, 'player', 'player')
 			else if (room.state == 'playing') {
-				await this.roomService.addUser(payload.user_id, room.id, 'spectator');
+				await this.roomService.addUser(payload.user_id, room.id, 'spectator', 'player');
 
 				const friendList: FriendListPayload = {
 					room_id: room.id,
@@ -138,6 +138,46 @@ export class WebsocketGateway {
 		if (room.players.length === 3 && room.state === 'lobby') {
 			this.gameService.startTurn(room, this.server);
 		}
+	}
+
+	@SubscribeMessage(WS_EVENTS.WATCH_GAME)
+	async handleWatchGame(
+		@ConnectedSocket() client: Socket,
+		@MessageBody() payload: WatchGamePayload,
+	) {
+		console.log('[recv] WatchGame', payload);
+
+		// add user to available room in the backend
+		const room = await this.roomService.findAvailableRoom(payload.user_id);
+
+		try {
+
+			await this.roomService.addUser(payload.user_id, room.id, 'spectator', 'spectator');
+
+			const friendList: FriendListPayload = {
+				room_id: room.id,
+				friends: await this.gameService.getFriends(payload.user_id, room),
+			}
+			client.emit(WS_EVENTS.FRIEND_LIST, friendList);
+
+		} catch (e) {
+			console.log(`[WatchGame] ${e.message}`);
+		}
+
+		if (room.id === -1) {
+			client.emit(WS_EVENTS.ROOM_FULL);
+			return;
+		}
+		// add user to the socket.io room
+		const socketRoom = `room-${room.id}`;
+		await client.join(socketRoom);
+		client.data.roomId = room.id;
+
+		// build and emit payload for every player & spectator individually.
+		this.turnemitservice.emitTurnInfo(room, this.server);
+
+		// emit drawing state to everybody
+		this.emitFullDrawingState(room.id, client);
 	}
 
 	@SubscribeMessage(WS_EVENTS.GUESS)
