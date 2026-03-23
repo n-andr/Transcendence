@@ -10,7 +10,7 @@ const WS_URL = import.meta.env.VITE_WS_URL ?? window.location.origin;//"http://l
 //const WS_URL =
 //  import.meta.env.VITE_WS_URL ??
 //  `http://${window.location.hostname}:3000`;
-  
+
 export type RoomStatePayload = {
   members: PlayerDto[];
   round: number; // -1 in waiting, 1+ when game starts
@@ -19,7 +19,7 @@ export type RoomStatePayload = {
 
 export const socket: Socket = io(WS_URL, {
   withCredentials: true,
-  transports: ["websocket"], 
+  transports: ["websocket"],
   autoConnect: false,        // we decide when to connect
 });
 
@@ -108,7 +108,7 @@ export function onTurnInfo(callback: (payload: TurnInfoPayload) => void) {
   console.log("[wss] subscribing to turn_info");
   const handler = (payload: TurnInfoPayload) => {
     console.log("[wss] turn_info received:", payload);
-    
+
     // Read userId from store at MESSAGE ARRIVAL TIME
     const currentUserId = useSessionStore.getState().user?.id;
     useSessionStore.getState().setRoom(payload.room_id); // update roomId in store on every turn_info, so it's always correct for other handlers that might need it
@@ -117,7 +117,7 @@ export function onTurnInfo(callback: (payload: TurnInfoPayload) => void) {
       callback(payload);
       return;
     }
-    
+
     if (payload.drawer === currentUserId) {
       console.log("[wss] I am the drawer this turn!");
       useSessionStore.getState().setRole("drawer");
@@ -125,7 +125,7 @@ export function onTurnInfo(callback: (payload: TurnInfoPayload) => void) {
       console.log("[wss] I am a guesser this turn. i am user " + currentUserId + " drawer is " + payload.drawer);
       useSessionStore.getState().setRole("guesser");
     }
-    
+
     callback(payload);
   };
   socket.on(WS_EVENTS.TURN_INFO, handler);
