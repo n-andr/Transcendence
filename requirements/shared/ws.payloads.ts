@@ -4,6 +4,10 @@ export interface JoinRoomPayload {
 	user_id: number;
 }
 
+export interface WatchGamePayload {
+	user_id: number;
+}
+
 export interface TurnInfoPayload {
 	room_id: number;
 	drawer: number;
@@ -67,8 +71,8 @@ export interface DrawingPayload {
 	coordinate_x: number;
 	coordinate_y: number;
 	color: `#${string}`// e.g. "#ff00ff"
-}	
-	
+}
+
 
 export type Point = { x: number; y: number };
 export type Stroke = {

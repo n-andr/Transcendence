@@ -4,6 +4,10 @@ export interface JoinRoomPayload {
 	user_id: number;
 }
 
+export interface WatchGamePayload {
+	user_id: number;
+}
+
 export interface TurnInfoPayload {
 	room_id: number;
 	drawer: number;
