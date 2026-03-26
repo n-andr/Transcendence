@@ -47,6 +47,7 @@ export class WebsocketGateway {
 	}
 
 	handleDisconnect(client: Socket) {
+		console.log(`Client ${client.id} with user id ${client.data.userId} disconnected`);
 		//automatically removes socket from socket.io rooms
 		const userId = client.data.userId;
 		if (!userId) return;
@@ -65,7 +66,9 @@ export class WebsocketGateway {
 		}
 		this.roomService.removeUser(userId);
 		this.registry.removeConnection(userId, client);
-		console.log(`Client ${client.id} with user id ${client.data.userId} disconnected`);
+		if (room) {
+			this.turnemitservice.emitTurnInfo(room, this.server);
+		}
 	}
 
 	//events from here on downwards
@@ -140,7 +143,7 @@ export class WebsocketGateway {
 		}
 	}
 
-	@SubscribeMessage(WS_EVENTS.WATCH_GAME)
+	/*@SubscribeMessage(WS_EVENTS.WATCH_GAME)
 	async handleWatchGame(
 		@ConnectedSocket() client: Socket,
 		@MessageBody() payload: WatchGamePayload,
@@ -178,7 +181,7 @@ export class WebsocketGateway {
 
 		// emit drawing state to everybody
 		this.emitFullDrawingState(room.id, client);
-	}
+	}*/
 
 	@SubscribeMessage(WS_EVENTS.GUESS)
 	handleGuess(
