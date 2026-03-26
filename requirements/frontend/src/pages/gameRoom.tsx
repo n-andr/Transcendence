@@ -175,7 +175,6 @@ export default function GamePage() {
           setCurrentWordLength(payload.word_length ?? 0);
           setTurnSummary(null);
           setRecentlyCorrectGuesser(null);
-          correctGuesserIdsRef.current = new Set();
 
           const turnDurationMs = (payload as TurnInfoPayload & { time_to_display?: number }).time_to_display ?? 0;
           if (payload.round > 0 && turnDurationMs > 0) {
@@ -218,9 +217,11 @@ export default function GamePage() {
           const nicknameByUserId = new Map(
             membersRef.current.map((player) => [player.userId, player.nickname])
           );
-          const correctGuesserNames = Array.from(correctGuesserIdsRef.current)
+          const correctGuesserIds = Array.from(correctGuesserIdsRef.current);
+          const correctGuesserNames = correctGuesserIds
             .map((userId) => nicknameByUserId.get(userId))
             .filter((name): name is string => Boolean(name));
+          correctGuesserIdsRef.current = new Set();
           const isRoundEnd =
             membersRef.current.length > 0 && turnRef.current === membersRef.current.length;
 

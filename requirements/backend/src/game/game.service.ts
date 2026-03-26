@@ -54,7 +54,7 @@ export class GameService {
 			room.timeout = undefined;
 			this.endOfTurn(room, server);
 		}, TURN_DURATION);
-	}	
+	}
 
 	sendFriendsToAll(room: Room, server: Server) {
 		const players = room.players;
@@ -133,6 +133,8 @@ export class GameService {
 		if (iscorrect === true) {
 			player.score += 1;//dummy for point gaining logic
 			room.correctGuesses.add(player.userId);
+			const drawer = room.players.find(p => p.userId === room.drawer);
+			if (drawer) drawer.score += 1;
 		}
 
 		const response: GuessUpdatePayload = {
@@ -147,8 +149,8 @@ export class GameService {
 
 	endOfTurn(room: Room, server: Server) {
 		//update drawer score
-		const drawer = room.players.find(p => p.userId === room.drawer);
-		if (drawer) drawer.score += room.correctGuesses.size;//dummy for points logic for drawer
+		/* const drawer = room.players.find(p => p.userId === room.drawer);
+		if (drawer) drawer.score += room.correctGuesses.size;//dummy for points logic for drawer*/
 		room.correctGuesses.clear();//prep for next turn
 
 		// admit spectators if there are any
