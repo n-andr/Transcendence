@@ -81,6 +81,13 @@ export async function joinRoom(userId: number) {
   socket.emit(WS_EVENTS.JOIN_ROOM, { user_id: userId });
 }
 
+export async function watchGame(userId: number) {
+  console.log("[ws] watchGame() called with userId:", userId);
+  await initSocketWithIdentify(userId);
+  console.log("[ws] identified, now emitting watchGame...");
+  socket.emit(WS_EVENTS.WATCH_GAME, { user_id: userId });
+}
+
 //Client -> Server: "joinRoom" + userId
 // export async function joinRoom(userId: number) {
 // 	await initSocketWithIdentify(userId);

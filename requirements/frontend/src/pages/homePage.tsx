@@ -10,11 +10,11 @@ export default function HomePage() {
   const user = useSessionStore((s) => s.user);
   const join_room = () => {
     // Very simple for MVP. We just navigate to the single room we have
-    navigate("/room");
+    navigate("/room", { state: { mode: "play" as const } });
   };
 
   const goToProfile = () => {
-    navigate("/profile");
+    navigate("/room", { state: { mode: "watch" as const } });
   }
 
   return (
@@ -36,7 +36,7 @@ export default function HomePage() {
                 Play!
               </Button>
                <Button className="w-full" variant="secondary" onClick={goToProfile}>
-              Go to profile
+                Watch game 
             </Button>
             </div>
           </div>

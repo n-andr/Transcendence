@@ -1,6 +1,6 @@
 // import { useParams } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import { useNavigate, useBlocker } from "react-router-dom";
+import { useNavigate, useBlocker, useLocation } from "react-router-dom";
 // import { RoomProvider } from "../features/room/RoomProvider";
 import { RoomLayout } from "../layouts/roomLayout";
 import DrawingBoard from "../components/room/drawingBoard";
@@ -8,7 +8,7 @@ import PromptBox from "../components/room/promptBox";
 import Lobby from "../components/room/lobby";
 import ConfirmLeaveDialog from "../components/room/confirmLeaveDialog";
 import type { TurnInfoPayload } from "../../shared/ws.payloads";
-import { socket, joinRoom, onTurnInfo, onRoomFull, onResults, onStartGame } from "../api/socket";
+import { socket, joinRoom, watchGame, onTurnInfo, onRoomFull, onResults, onStartGame } from "../api/socket";
 import { useSessionStore } from "../state/sessionStore";
 import rocketImage from "../assets/rocket2.png";
 import beeImage from "../assets/bee.png";
@@ -76,14 +76,16 @@ function formatNames(names: string[]): string {
 const START_COUNTDOWN_MS = 3000; // 3 second "Get Ready" popup
 
 export default function GamePage() {
-  const navigate = useNavigate(); // Function to navigate to different pages
-  // Remove duplicate players from the list
+  const navigate = useNavigate();
+  const location = useLocation();
+  const roomMode = (location.state as { mode?: "play" | "watch" } | null)?.mode ?? "play";
+  // safety function to remove duplicate players from the list
   const dedupePlayers = (players: TurnInfoPayload["players"]) =>
     players.filter((player, index, list) =>
       list.findIndex((candidate) => candidate.userId === player.userId) === index
     );
-  
-  // Get saved user data from storage
+
+  // 1. get userId from storage
   const user = useSessionStore((s) => s.user);
   const logout = useSessionStore((s) => s.logout);
   const clearRoom = useSessionStore((s) => s.clearRoom);
@@ -314,9 +316,14 @@ export default function GamePage() {
           }
         });
 
-        // Connect to the game server
-        await joinRoom(userId);
-        console.log("[gameRoom] joinRoom successful");
+        // 3. handle joinRoom
+        if (roomMode === "watch") {
+          await watchGame(userId);
+          console.log("[gameRoom] watchGame successful");
+        } else {
+          await joinRoom(userId);
+          console.log("[gameRoom] joinRoom successful");
+        }
       } catch (e) {
         console.error(e);
         clearConnectTimeout();
@@ -333,10 +340,9 @@ export default function GamePage() {
       unsubResults();
       socket.disconnect();
     };
-    // Re-run this when user or route changes
-  }, [userId, logout, navigate, clearRoom]);
+  }, [userId, logout, navigate, clearRoom, roomMode]);
 
-  // Start the countdown when game state changes to playing
+  // countdown before play
   useEffect(() => {
     let countdownInterval: number | undefined;
     const prevState = prevWsStateRef.current;
@@ -435,7 +441,7 @@ useEffect(() => {
 
     {/* Show component only if the condition is true */}
     {wsState === "connecting" && (
-      <Lobby 
+      <Lobby
         title="Connecting..."
         message="Connecting to the game room..."
         icon = {cloudImage}
@@ -443,7 +449,7 @@ useEffect(() => {
     )}
 
     {wsState === "waiting" && (
-      <Lobby 
+      <Lobby
         title="Waiting for Players"
         message="Not enough players in room"
         icon={clockImage}
@@ -451,14 +457,14 @@ useEffect(() => {
     )}
 
     {wsState === "full" && (
-      <Lobby 
+      <Lobby
         title="Room Full"
         message="Room 2 is under construction. Please wait for a spot in Room 1 to become available."
       />
     )}
 
     {wsState === "error" && (
-      <Lobby 
+      <Lobby
         title="Connection Error"
         message="Unable to connect to the game. Please refresh the page."
       />
@@ -546,9 +552,9 @@ useEffect(() => {
 
       {/* Show countdown only if game is starting and user is playing (not spectating) */}
       {wsState === "playing" && startCountdown !== null && !isSpectator && (
-        <Lobby 
-          title="Get Ready" 
-          message={`Game will start in: ${startCountdown}`} 
+        <Lobby
+          title="Get Ready"
+          message={`Game will start in: ${startCountdown}`}
           icon={rocketImage}/>
       )}
 

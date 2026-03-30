@@ -100,7 +100,7 @@ async function handleRemoveFriend(friendNickname: string) {
           </p>
         </div>
 
-        <Button onClick={() => navigate("/room")}>Back to Room</Button>
+        <Button onClick={() => navigate("/play")}>To the Game Room</Button>
       </div>
 
       {/* Top section */}
