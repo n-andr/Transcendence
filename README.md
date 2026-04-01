@@ -1,7 +1,9 @@
 # ft_transcendence
 
+This project has been created as part of the 42 curriculum by lde-taey, mrodenbu, nandreev, nboer, sgramsch.
+
 ## Description
-`ft_transcendence` is a full-stack web application built as part of the 42 curriculum.  
+You Draw Me Crazy is a full-stack web application built as part of the 42 curriculum, within the project called ft_transcendence.
 The project combines real-time multiplayer gameplay with modern web technologies and a containerized development workflow.
 
 Core goals of the project:
