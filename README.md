@@ -72,22 +72,16 @@ This command:
 | Module | Points | Justification | Implementation | Worked on by |
 | --- | --- | --- | --- | --- |
 | total | 11 / 14 | - | - | -Maybe just use who could respond to the questions the best |
-| Use a framework for both the frontend and backend.
- | 2 |  | Backend: NestJS
-Frontend: Tailwind |  |
-|  Implement real-time features using WebSockets or similar technology. | 2 | Real time updates on the game progress (drawing, scores …) |  | all
- |
+| Use a framework for both the frontend and backend. | 2 |  | Backend: NestJS Frontend: Tailwind |  |
+|  Implement real-time features using WebSockets or similar technology. | 2 | Real time updates on the game progress (drawing, scores …) |  | all |
 | Use an ORM for the database. | 1 |  | Prisma | sgramsch |
-| Implement a complete web-based game where users can play against each
-other. | 2 |  |  | all |
-| Remote players — Enable two players on separate computers to play the
-same game in real-time. | 2 |  |  | all |
+| Implement a complete web-based game where users can play against eachother. | 2 |  |  | all |
+| Remote players — Enable two players on separate computers to play the same game in real-time. | 2 |  |  | all |
 | Multiplayer game (more than two players). | 2 |  |  | all |
 |  |  |  |  |  |
 | OPTIONAL |  |  |  |  |
 | Support for multiple languages (at least 3 languages). | 1 |  |  |  |
-| Support for additional browsers.
- | 1 |  |  |  |
+| Support for additional browsers. | 1 |  |  |  |
 |  Game customization options | 1 |  |  |  |
 
 ## Individual Contributions:
