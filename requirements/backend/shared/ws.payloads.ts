@@ -11,11 +11,14 @@ export interface WatchGamePayload {
 export interface TurnInfoPayload {
 	room_id: number;
 	drawer: number;
-	word: string | null;
-	word_length: number;
+	word: string | null; // dont give to spectator&player
+	word_length: number; //not for spectator
 	round: number;
 	turn: number;
 	players: PlayerDto[];
+	spectators: PlayerDto[];
+	time_to_display: number; // ?
+	turn_start_time: number;
 }
 
 export interface GuessPayload {
