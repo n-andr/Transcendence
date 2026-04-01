@@ -141,7 +141,7 @@ export class WebsocketGateway {
 
 		// emit drawing state to everybody
 		this.emitFullDrawingState(room.id, client);
-		if (room.players.length === 3 && room.state === 'lobby') {
+		if (room.players.length === 2 && room.state === 'lobby') {
 			this.gameService.startTurn(room, this.server);
 		}
 	}
