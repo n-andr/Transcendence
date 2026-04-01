@@ -293,7 +293,8 @@ export class WebsocketGateway {
 			turn: room.turn,
 			players: room.players,
 			spectators: room.spectators,
-			time_to_display: 60_000,
+			time_to_display: 60_000 - (Date.now() - (room.turnStartTime?? Date.now())),
+			turn_start_time: room.turnStartTime?? Date.now(),
 		};
 
 		this.server.to(socketRoom).emit(WS_EVENTS.TURN_INFO, response);
