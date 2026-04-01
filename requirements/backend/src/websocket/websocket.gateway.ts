@@ -8,7 +8,7 @@ import {
 import { Injectable } from "@nestjs/common";
 import { Server, Socket } from 'socket.io';
 import { ConnectionRegistry } from './websocket.service';
-import type { DrawPayload, GuessPayload, GuessUpdatePayload, JoinRoomPayload, TurnInfoPayload, StrokeAppendPayload, AddFriendPayload, FriendListPayload, RemoveFriendPayload } from './dtos/ws.payloads';
+import type { DrawPayload, GuessPayload, GuessUpdatePayload, JoinRoomPayload, TurnInfoPayload, StrokeAppendPayload, AddFriendPayload, FriendListPayload, RemoveFriendPayload, WatchGamePayload } from './dtos/ws.payloads';
 import { WS_EVENTS } from './dtos/ws.events';
 import { RoomsService } from 'src/rooms/rooms.service';
 import { GameService } from 'src/game/game.service';
@@ -135,6 +135,9 @@ export class WebsocketGateway {
 
 		// build and emit payload for every player & spectator individually.
 		this.turnemitservice.emitTurnInfo(room, this.server);
+
+		// send friends to every player in the room
+		this.gameService.sendFriendsToAll(room, this.server);
 
 		// emit drawing state to everybody
 		this.emitFullDrawingState(room.id, client);
