@@ -146,7 +146,7 @@ export class WebsocketGateway {
 		}
 	}
 
-	/*@SubscribeMessage(WS_EVENTS.WATCH_GAME)
+	@SubscribeMessage(WS_EVENTS.WATCH_GAME)
 	async handleWatchGame(
 		@ConnectedSocket() client: Socket,
 		@MessageBody() payload: WatchGamePayload,
@@ -184,7 +184,7 @@ export class WebsocketGateway {
 
 		// emit drawing state to everybody
 		this.emitFullDrawingState(room.id, client);
-	}*/
+	}
 
 	@SubscribeMessage(WS_EVENTS.GUESS)
 	handleGuess(
