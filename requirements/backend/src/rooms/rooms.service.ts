@@ -126,7 +126,7 @@ export class RoomsService {
 	}
 
 	removeAllUsers(roomId: number) {
-		console.log('remove all players from room ', roomId);
+		console.log('remove all players and spectators from room ', roomId);
 		const room = this.rooms.get(roomId);
 		if (!room) return;
 		// remove user → room mappings
@@ -138,7 +138,7 @@ export class RoomsService {
 		}
 		// clear players array (keep reference)
 		room.players.length = 0;
-		console.log('all players removed from room', roomId);
+		console.log('all players and spectators removed from room', roomId);
 	}
 
 	appendStrokes(strokes: Stroke[], roomId: number) {
