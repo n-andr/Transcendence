@@ -30,8 +30,8 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     platform: linux/amd64
-    expose:
-      - "5173"
+    ports:
+      - "5173:5173"
     depends_on:
       backend:
         condition: service_healthy
@@ -58,20 +58,6 @@ services:
       interval: 2s
       timeout: 3s
       retries: 15
-    
-  nginx:
-    build:
-      context: ./requirements/nginx
-      dockerfile: Dockerfile
-    container_name: nginx
-    ports:
-      - "443:443"
-      - "80:80"
-    volumes:
-      - ./requirements/nginx/ssl:/etc/nginx/ssl
-    depends_on:
-      - frontend
-      - backend
 
 volumes:
   postgres_data:
