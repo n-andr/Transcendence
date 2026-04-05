@@ -185,11 +185,11 @@ export class GameService {
 		this.roomsService.admitSpectators(room.id);
 
 		// check if there are enough players to continue
-		if (room.players.length < 3) {
+		if (room.players.length < 2) {
     		console.log(`Room ${room.id} has to little players, aborting startTurn`);
 			this.gameOver(room, server, true);
 		}
-		else if (room.round === room.maxRounds && room.turn === room.players.length) {
+		else if (room.round === room.maxRounds && room.turn >= room.players.length) {
 			console.log(`Room ${room.id} finished the game`);
 			this.gameOver(room, server, true);
 		}
