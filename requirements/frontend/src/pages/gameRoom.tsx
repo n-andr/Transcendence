@@ -297,6 +297,7 @@ export default function GamePage() {
                   solution: payload.solution,
                   winnerText: formatNames(roundWinners),
                   winnerScore: topScore,
+                  players: scoringPlayers,
                 },
               },
             });

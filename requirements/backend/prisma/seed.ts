@@ -22,7 +22,7 @@ async function main() {
     "ring", "necklace", "backpack", "wallet", "coin",
 
     "bus", "truck", "taxi", "subway", "scooter", "skateboard",
-    "traffic light", "road", "garage", "gas station",
+    "traffic light", "road", "garage",
 
     "beach", "island", "desert", "forest", "jungle", "lake",
     "ocean", "waterfall", "volcano", "cave", "hill", "valley",
