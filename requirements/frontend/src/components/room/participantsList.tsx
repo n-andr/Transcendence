@@ -39,7 +39,9 @@ export default function ParticipantsList({ highlightedPlayerId, players, spectat
     };
 
     const off = friendList(onFriendList);
-  	return off;
+    return () => {
+      off();
+    };
   }, [roomId]);
 
   const friendSet = useMemo(() => new Set(friends), [friends]);
@@ -47,6 +49,8 @@ export default function ParticipantsList({ highlightedPlayerId, players, spectat
   const spectatorSet = useMemo(() => new Set(spectators.map((spectator) => spectator.userId)), [spectators]);
 
   function toggleFriend(targetNickname: string) {
+    if (!roomId || !myUserId) return; // Guard: ensure roomId and myUserId exist
+    
     const isFriend = friendSet.has(targetNickname);
 
     if (isFriend) {
