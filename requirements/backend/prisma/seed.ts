@@ -50,12 +50,12 @@ async function main() {
     "market", "restaurant", "cafe", "hotel",
 
     "game", "puzzle", "dice", "card", "chess", "toy",
-    "doll", "teddy bear", "kite", "drum",
+    "doll", "kite", "drum",
 
     "smile", "laugh", "cry", "sleep", "dream", "run", "jump",
     "swim", "dance", "sing", "clap", "wave", "hug", "kiss",
 
-    "circle", "square", "triangle", "line", "dot", "arrow",
+    "circle", "square", "triangle", "arrow",
     "spiral", "zigzag"
   ];
 

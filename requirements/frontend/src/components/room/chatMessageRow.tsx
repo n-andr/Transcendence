@@ -71,7 +71,7 @@ export function ChatMessageRow({ message, isOwn }: ChatMessageProps) {
           {isCorrect && (
             <span
             className="text-xs font-bold bg-orange-300 text-white border border-orange-400 px-1.5 py-0.5 rounded-full whitespace-nowrap" >
-              Correct! + 1 pt
+              Correct!
             </span>
           )}
         </div>
