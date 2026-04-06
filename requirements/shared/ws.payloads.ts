@@ -12,6 +12,8 @@ export interface TurnInfoPayload {
 	round: number;
 	turn: number;
 	players: PlayerDto[];
+	spectators: PlayerDto[];
+	time_to_display?: number;
 }
 
 export interface GuessPayload {
@@ -32,6 +34,7 @@ export interface ResultsPayload {
 	final: boolean;
 	solution: string;
 	time_to_display: number;
+	players?: PlayerDto[];
 }
 
 export interface FriendListPayload {

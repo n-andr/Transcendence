@@ -7,23 +7,19 @@ import { TURN_DURATION } from './../game/game.constants';
 
 @Injectable()
 export class TurnEmitService {
-  emitTurnInfo(room: Room, server: Server) {
-    for (const p of [...room.players, ...room.spectators]) {
-      const isDrawer = p.userId === room.drawer;
-
-      const payload: TurnInfoPayload = {
-        room_id: room.id,
-        drawer: room.drawer,
-        word: isDrawer ? room.word : null,
-        word_length: room.word_length,
-        round: room.round,
-        turn: room.turn,
-        players: room.players,
-        spectators: room.spectators,
-        time_to_display: TURN_DURATION,
-      };
-
-      server.to(`user-${p.userId}`).emit(WS_EVENTS.TURN_INFO, payload);
-    }
+  emitTurnInfo(room: Room, server: Server, timeToDisplay?: number) {
+    const payload: TurnInfoPayload = {
+      room_id: room.id,
+      drawer: room.drawer,
+      word: room.drawer === room.drawer ? room.word : null,
+      word_length: room.word_length,
+      round: room.round,
+      turn: room.turn,
+      players: room.players,
+      spectators: room.spectators,
+      time_to_display: timeToDisplay ?? TURN_DURATION,
+    };
+    server.to(`room-${room.id}`).emit(WS_EVENTS.TURN_INFO, payload);
+    return payload;
   }
 }

@@ -36,6 +36,7 @@ export interface RoomState {
   prompt: Prompt | null;
 
   participants: Participant[];
+  spectators: Participant[];
 
   me: Participant;
 }

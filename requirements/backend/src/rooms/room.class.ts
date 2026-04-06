@@ -20,5 +20,6 @@ export class Room {
 	correctGuesses: Set<number> = new Set();//user ids that guessed correctly
 	timeout?: NodeJS.Timeout;
 	public usedWordIds: number[] = [];
+	public turnStartTime?: number;//timestamp when turn started, for time-dependent scoring
 	//public active: boolean;
 }

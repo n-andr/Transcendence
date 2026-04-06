@@ -13,7 +13,7 @@ export interface TurnInfoPayload {
 	turn: number;
 	players: PlayerDto[];
 	spectators: PlayerDto[];
-	time_to_display: number; // ? 
+	time_to_display?: number; // ? 
 }
 
 export interface GuessPayload {
