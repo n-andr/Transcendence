@@ -21,5 +21,6 @@ export class Room {
 	timeout?: NodeJS.Timeout;
 	turnStartTime: number;
 	public usedWordIds: number[] = [];
+	public turnStartTime?: number;//timestamp when turn started, for time-dependent scoring
 	//public active: boolean;
 }

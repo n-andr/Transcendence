@@ -12,19 +12,17 @@ import { TurnEmitService } from 'src/websocket/turnemit.service';
 import { TURN_DURATION, RESULTS_DURATION } from './game.constants';
 
 const MAX_GUESS_LENGTH = 100;
-
+const POPUP_DISPLAY_MS = 3000; // Countdown popup duration
 
 @Injectable()
 export class GameService {
-	private readonly logger = new Logger(GameService.name);//for writing backend logs that are this green formated thingy
+	private readonly logger = new Logger(GameService.name);
 	constructor(
 	private readonly wordsService: WordsService,
 	private readonly roomsService: RoomsService,
 	private readonly usersService: UsersService,
-	//private readonly gateway: WebsocketGateway,
 	private readonly turnEmitService: TurnEmitService
 	) {}
-
 
 	async startTurn(room: Room, server: Server) {
 		console.log(`Room ${room.id} at start of turn ${room.turn}: players ${room.players.map(p => p.userId)}, spectators ${room.spectators.map(s => s.userId)}`);
@@ -35,6 +33,7 @@ export class GameService {
 		}
 		//clear drawing board for new turn
 		this.roomsService.clearStrokes(room.id);
+		room.turnStartTime = Date.now();
 		server.to(`room-${room.id}`).emit(WS_EVENTS.INIT_DRAWING, {
 			room_id: room.id,
 			strokes: [],
@@ -53,10 +52,15 @@ export class GameService {
 		room.drawer = room.players[(room.turn-1) % room.players.length].userId; //modulo to always pick an existing player index even when others disconnect.
 		room.turnStartTime = Date.now();
 
-		const payload = this.turnEmitService.emitTurnInfo(room, server);
+		// Calculate turn duration: base turn time + popup duration for non-spectators
+		const turnDurationWithPopup = TURN_DURATION + POPUP_DISPLAY_MS;
+
+		this.turnEmitService.emitTurnInfo(room, server, turnDurationWithPopup);
 
 		this.logger.log(`Room ${room.id} round.turn ${room.round}.${room.turn}, drawerId: ${room.drawer} draws ${room.word}`);
 		this.sendFriendsToAll(room, server);
+		
+		// Timeout should use the base duration only (popup happens during this time)
 		room.timeout = setTimeout(() => {
 			room.timeout = undefined;
 			this.endOfTurn(room, server);
@@ -149,10 +153,21 @@ export class GameService {
 		const iscorrect = normalizedGuess === normalizedWord;
 
 		if (iscorrect === true) {
-			player.score += 1;//dummy for point gaining logic
+			// Calculate guesser score based on time remaining
+			const elapsed = room.turnStartTime ? Date.now() - room.turnStartTime : 0;
+			const timeRemaining = Math.max(0, TURN_DURATION - elapsed);
+			let guesserPoints = 20;
+			if (timeRemaining > 10_000) {
+				guesserPoints = 50;
+			} else if (timeRemaining > 5_000) {
+				guesserPoints = 30;
+			}
+			player.score += guesserPoints;
 			room.correctGuesses.add(player.userId);
+		
+			// Drawer gets 30 points per correct guess
 			const drawer = room.players.find(p => p.userId === room.drawer);
-			if (drawer) drawer.score += 1;
+			if (drawer) drawer.score += 30;
 		}
 
 		const response: GuessUpdatePayload = {

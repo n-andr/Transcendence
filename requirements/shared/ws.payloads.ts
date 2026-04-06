@@ -39,6 +39,7 @@ export interface ResultsPayload {
 	final: boolean;
 	solution: string;
 	time_to_display: number;
+	players?: PlayerDto[];
 }
 
 export interface FriendListPayload {

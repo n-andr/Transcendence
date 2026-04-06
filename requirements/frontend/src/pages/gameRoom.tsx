@@ -81,6 +81,8 @@ function formatNames(names: string[]): string {
   return `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
 }
 
+const START_COUNTDOWN_MS = 3000; // 3 second "Get Ready" popup
+
 export default function GamePage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -129,6 +131,16 @@ export default function GamePage() {
     correctGuesserIdsRef.current.add(guesserId);
     setRecentlyCorrectGuesser(guesserId);
   };
+
+  // Clear highlight after delay
+  useEffect(() => {
+    if (recentlyCorrectGuesser !== null) {
+      const timer = setTimeout(() => {
+        setRecentlyCorrectGuesser(null);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [recentlyCorrectGuesser]);
 
   // Block navigation when game is active
   useBlocker(({ nextLocation }) => {
@@ -198,6 +210,9 @@ export default function GamePage() {
             return;
           }
 
+          const previousRound = roundRef.current;
+          const previousTurn = turnRef.current;
+
           const players = dedupePlayers(payload.players);
           const spectatorList = dedupePlayers(payload.spectators ?? []);
           setMembers(players);
@@ -209,12 +224,22 @@ export default function GamePage() {
           setCurrentWord(payload.word);
           setCurrentWordLength(payload.word_length ?? 0);
           setTurnSummary(null);
-          setRecentlyCorrectGuesser(null);
+          
+          const isNewTurn = payload.round !== previousRound || payload.turn !== previousTurn;
+          
+          if (isNewTurn) {
+            setRecentlyCorrectGuesser(null);
+          }
 
           const turnDurationMs = (payload as TurnInfoPayload & { time_to_display?: number }).time_to_display ?? 0;
-          if (payload.round > 0 && turnDurationMs > 0) {
-            setClockRemainingMs(turnDurationMs);
+
+          if (isNewTurn && payload.round > 0 && turnDurationMs > 0) {
+            // Subtract popup duration so clock displays actual turn time (e.g., 20s not 23s)
+            const displayDurationMs = Math.max(0, turnDurationMs - START_COUNTDOWN_MS);
+            setClockRemainingMs(displayDurationMs);
             setClockRunning(true);
+          } else if (!isNewTurn) {
+            // Same turn update: keep timer as-is
           } else {
             setClockRemainingMs(0);
             setClockRunning(false);
@@ -356,23 +381,26 @@ export default function GamePage() {
     };
   }, [wsState]);
 
-  useEffect(() => {
-    if (!clockRunning) return;
+// Clock should be visually paused during any blocking popup state
+const clockShouldTick = clockRunning && startCountdown === null && turnSummary === null;
 
-    const interval = window.setInterval(() => {
-      setClockRemainingMs((prev) => {
-        const next = Math.max(0, prev - 250);
-        if (next === 0) {
-          setClockRunning(false);
-        }
-        return next;
-      });
-    }, 250);
+useEffect(() => {
+  if (!clockShouldTick) return;
 
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [clockRunning]);
+  const interval = window.setInterval(() => {
+    setClockRemainingMs((prev) => {
+      const next = Math.max(0, prev - 250);
+      if (next === 0) {
+        setClockRunning(false);
+      }
+      return next;
+    });
+  }, 250);
+
+  return () => {
+    window.clearInterval(interval);
+  };
+}, [clockShouldTick]); // <-- was [clockRunning]
 
   useEffect(() => {
     if (!turnSummary) return;
@@ -454,6 +482,7 @@ export default function GamePage() {
           {(drawerId === userId || drawerId !== -1) && (
             <div className="absolute top-8 left-8 z-10 max-w-sm">
               <PromptBox
+                isDrawer={drawerId === userId}
                 title={drawerId === userId ? "Your prompt" : "Guess the word"}
                 prompt={
                   drawerId === userId
