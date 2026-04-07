@@ -13,8 +13,6 @@ Core goals of the project:
 - Organize the codebase into a clear frontend/backend architecture.
 - Run the full stack reproducibly via Docker.
 
----
-
 ## Instructions
 
 ### Prerequisites
@@ -47,7 +45,6 @@ This command:
 - PostgreSQL runs as a dedicated service (`postgres:16-alpine`).
 - Shared files are copied from `requirements/backend/shared` to `requirements/frontend/shared` via `make sync-shared`.
 
----
 
 ## Technical Stack
 - **Frontend:** React, TypeScript, Vite, Tailwind CSS, Zustand, React Router
@@ -62,8 +59,6 @@ This command:
 - **Modular backend structure (NestJS):** Backend responsibilities are split into focused modules (`auth`, `game`, `rooms`, `websocket`, `database`) to improve maintainability, ownership, and feature iteration speed.
 - **Component/state-driven frontend:** React components are organized by feature/layout, with Zustand for session and app state, making UI updates predictable during fast real-time changes.
 - **Container-first development workflow:** Frontend, backend, and PostgreSQL run in Docker Compose with Make targets, ensuring reproducible local setups and minimizing environment drift across team members.
-
----
 
 ## Database Scheme
 
@@ -99,8 +94,6 @@ The current schema is intentionally minimal and focused on authentication and ga
 The authoritative database definition is:
 
 `requirements/backend/prisma/schema.prisma`
-
----
 
 ## Features List
 The following list reflects the implemented project scope and ownership. 
@@ -154,22 +147,51 @@ The following list reflects the implemented project scope and ownership.
 | [B] WebSocket setup | Connect clients to server for real-time updates | Handles canvas, guesses, and player events | mrodenbu, nboer, nandreev |
 | [B/F] Event handling | Drawer strokes, guess submissions, score updates | Server-authoritative events to prevent desync | mrodenbu, nboer, lde-taey, nandreev, sgramsch |
 
----
-
-## Modules:
+## Modules
 
 | Module | Points | Justification | Implementation | Worked on by |
 | --- | --- | --- | --- | --- |
-| Total | 11 / 14 | Selected modules maximize gameplay quality and technical depth while staying realistic for timeline and team size. | Mandatory modules were prioritized first; optional modules were evaluated and partially deferred. | Team |
-| Use a framework for both the frontend and backend. | 2 | Frameworks improved maintainability, onboarding speed, and consistency across a multi-person codebase. | Backend built with NestJS module architecture (`auth`, `game`, `rooms`, `websocket`, `database`); frontend built with React + Vite + Tailwind component/layout structure. | nandreev |
-| Implement real-time features using WebSockets or similar technology. | 2 | Real-time gameplay requires low-latency synchronization of drawing, guesses, scores, and player state. | Socket.IO channels/events connect frontend and backend; shared DTO/event typings synchronize payload contracts across both sides. | all |
-| Use an ORM for the database. | 1 | ORM reduced boilerplate, improved schema traceability, and made migrations/versioning reliable for collaborative development. | Prisma schema + migrations manage PostgreSQL entities; backend services query via Prisma client through database/prisma modules. | sgramsch |
-| Implement a complete web-based game where users can play against each other. | 2 | This is the core project requirement and demonstrates end-to-end full-stack integration. | Implemented full loop: authentication, room join, turn progression, drawing/guessing, scoring, round transitions, and post-game summary. | all |
-| Remote players — Enable two players on separate computers to play the same game in real-time. | 2 | Real distributed play validates networked architecture beyond local-only testing. | Clients connect through backend WebSocket gateway; server-authoritative game state is broadcast to all connected players. | nandreev |
-| Multiplayer game (more than two players). | 2 | Multi-user rounds are central to game design and module scoring requirements. | Room/member management and turn rotation support multiple concurrent players with synchronized scoreboard and event updates. | all |
-|  |  |  |  |  |
+| Total | 14 | Selected modules cover core mandatory requirements and reinforce a complete real-time multiplayer experience. | All selected modules were implemented and integrated in the current stack. | Team |
+| Use a framework for both the frontend and backend | 2 | Frameworks improve maintainability, code organization, and development speed in a team project. | Frontend uses React; backend uses NestJS with modular structure (`auth`, `game`, `rooms`, `websocket`, `database`). | nandreev |
+| Implement real-time features using WebSockets or similar technology | 2 | Real-time synchronization is required for gameplay, lobby state, and live interactions between users. | Socket.IO powers real-time updates, graceful connection/disconnection handling, and efficient server-to-client broadcasting. | lde-taey, nandreev |
+| Allow users to interact with other users (chat, profile, friends) | 2 | Social interaction is essential for multiplayer engagement and user retention. | Implemented basic chat, user profile access, and friend management/list features in the app flow. | lde-taey, nboer, nandreev |
+| Use an ORM for the database | 1 | ORM simplifies schema evolution, migrations, and typed data access in backend services. | Prisma ORM is used with PostgreSQL, migrations, and generated client access in backend modules. | sgramsch |
+| Implement a complete web-based game where users can play against each other | 2 | The full playable game loop is the core functional goal of the project. | Built a complete live multiplayer game with clear rules, win/loss conditions, round flow, and score tracking. | all |
+| Remote players (2 players on separate computers in real-time) | 2 | Networked remote play validates real-world multiplayer behavior beyond local testing. | Remote clients can join and play live; latency/disconnection handling and reconnection logic are supported. | mrodenbu, nboer, nandreev |
+| Multiplayer game (more than two players) | 2 | Supporting 3+ players enables richer gameplay and satisfies advanced module requirements. | Room and game logic support three or more concurrent players with synchronized state and fair turn progression. | all |
+| Implement spectator mode for games | 1 | Spectator mode improves usability and community engagement around ongoing matches. | Users can watch ongoing matches with real-time state updates; spectator chat is optional. | mrodenbu, nandreev |
 
----
+As a reference, here are the literal sections from the subject:
+- [x]  2️⃣ Major: Use a framework for both the frontend and backend.
+    - [x]  Use a frontend framework (React, Vue, Angular, Svelte, etc.).
+    - [x]  Use a backend framework (Express, NestJS, Django, Flask, Ruby on Rails, etc.).
+- [x]  2️⃣ Major: Implement real-time features using WebSockets or similar technology.
+    - [x]  Real-time updates across clients.
+    - [x]  Handle connection/disconnection gracefully.
+    - [x]  Efficient message broadcasting.
+- [x]  2️⃣ Major: Allow users to interact with other users. The minimum requirements are:
+    - [x]  A **basic chat** system (send/receive messages between users).
+    - [x]  A **profile** system (view user information).
+    - [x]  A **friends** system (add/remove friends, see friends list).
+- [x]  1️⃣ Minor: Use an ORM for the database.
+- [x]  2️⃣ Major: Implement a complete web-based game where users can play against each other.
+    - [x]  The game can be real-time multiplayer (e.g., Pong, Chess, Tic-Tac-Toe, Card games, etc.).
+    - [x]  Players must be able to play live matches.
+    - [x]  The game must have clear rules and win/loss conditions.
+    - [x]  The game can be 2D or 3D.
+- [x]  2️⃣ Major: Remote players — Enable two players on separate computers to play the same game in real-time.
+    - [x]  Handle network latency and disconnections gracefully.
+    - [x]  Provide a smooth user experience for remote gameplay.
+    - [x]  Implement reconnection logic.
+- [x]  2️⃣ Major: Multiplayer game (more than two players).
+    - [x]  Support for three or more players simultaneously.
+    - [x]  Fair gameplay mechanics for all participants.
+    - [x]  Proper synchronization across all clients.
+- [x]  1️⃣ Minor: Implement spectator mode for games.
+    - [x]  Allow users to watch ongoing games.
+    - [x]  Real-time updates for spectators.
+    - [x]  Optional: spectator chat.
+
 
 ## Individual Contributions:
 
@@ -198,8 +220,6 @@ The following list reflects the implemented project scope and ownership.
 - Database & Prisma
 
 
----
-
 ## Team Information
 
 | Team member | Role | Responsibilities |
@@ -208,8 +228,6 @@ The following list reflects the implemented project scope and ownership.
 | lde-taey | Product Owner | Defines product vision, prioritizes features, considers user needs, evaluation organization |
 | nandreev | Tech Lead | Technical direction, architecture decisions, implementation guidance |
 | mrodenbu | Project Manager | Organization of the team, setting up meetings, time management |
-
----
 
 ## Project Management
 
@@ -227,12 +245,18 @@ The following list reflects the implemented project scope and ownership.
 	- Used to track the full project
     - Gathered information and resources
 	- Task distribution overview
-	- Research notes
+	- Research and meeting notes
  - **Figma**
 	- Used in an early phase to create a user-flow visualization
  - **Canva**
 	- Used to support layout design
 	- Source for images and icons
+
+### Communication tools
+- **Discord**
+	- Used for meeting calls 
+- **Slack**
+	- Used for quick daily communication, meeting updates, and spontaneous troubleshooting sessions.
 
 ### Challenges
 
@@ -243,7 +267,6 @@ The following list reflects the implemented project scope and ownership.
 - Scope management: module selection required explicit effort/desirability trade-off analysis, with some features (e.g. full User Management) deprioritized due to complexity.
 - React 18 development mode caused some logic (for example code triggered from `useEffect`) to run twice because `StrictMode` intentionally re-runs it to detect unsafe side effects. This initially broke parts of our game loop during local development, so we added proper cleanup and guard logic to prevent duplicate initialization while keeping production behavior unchanged.
 
----
 
 ## Resources
 - 42 project subject and evaluation criteria
