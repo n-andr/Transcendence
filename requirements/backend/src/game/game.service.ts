@@ -27,6 +27,10 @@ export class GameService {
 	async startTurn(room: Room, server: Server) {
 		console.log(`Room ${room.id} at start of turn ${room.turn}: players ${room.players.map(p => p.userId)}, spectators ${room.spectators.map(s => s.userId)}`);
 
+		if (room.players.length < 2) {
+			this.gameOver(room, server, true);
+		}
+		//clear drawing board for new turn
 		this.roomsService.clearStrokes(room.id);
 		room.turnStartTime = Date.now();
 		server.to(`room-${room.id}`).emit(WS_EVENTS.INIT_DRAWING, {
