@@ -29,6 +29,7 @@ export class GameService {
 
 		if (room.players.length < 2) {
 			this.gameOver(room, server, true);
+			return;
 		}
 		//clear drawing board for new turn
 		this.roomsService.clearStrokes(room.id);
