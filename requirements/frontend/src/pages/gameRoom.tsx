@@ -13,6 +13,7 @@ import { useSessionStore } from "../state/sessionStore";
 import rocketImage from "../assets/rocket2.png";
 import beeImage from "../assets/bee.png";
 import cloudImage from "../assets/cloud.png";
+import clockImage from "../assets/clock.png";
 import type { ChatMessage } from "../components/room/chatMessageRow";
 
 type RoomPlayer = TurnInfoPayload["players"][number];
@@ -445,6 +446,7 @@ useEffect(() => {
       <Lobby 
         title="Waiting for Players"
         message="Not enough players in room"
+        icon={clockImage}
       />
     )}
 
@@ -497,40 +499,48 @@ useEffect(() => {
       {/* Show overlay that blocks interaction until dismissed */}
       {wsState === "playing" && turnSummary !== null && (
         <Lobby
-          title={turnSummary.isRoundEnd ? "Round Over" : "Turn Over"}
+          // title={turnSummary.isRoundEnd ? "Round Over" : "Turn Over"}
           message={
-            turnSummary.isRoundEnd
-              ? (
-                  <>
-                    <p>
-                      The correct answer was: <strong>{turnSummary.solution}</strong>
-                    </p>
-                    <p>
-                      <strong>{turnSummary.correctGuessersText}</strong> guessed correctly
-                    </p>
-                    <p>
+            <div className="flex flex-col h-80 justify-between items-center w-full">
+              {/* Guessers and bee image section */}
+              <div className="flex items-center gap-3 justify-center">
+                <span className="text-4xl font-bold text-textPrimary">
+                  {turnSummary.correctGuessersText} guessed correctly!
+                </span>
+                <img src={beeImage} alt="bee" className="w-12 h-12 object-contain" />
+              </div>
+
+              {/* Answer section with spacing */}
+              <div className="space-y-4 text-center">
+                <div className="text-sm text-textMuted">
+                  The correct answer was:
+                </div>
+                <div className="text-2xl font-semibold text-textPrimary">
+                  {turnSummary.solution}
+                </div>
+
+                {/* Round winner section - only show if round end */}
+                {turnSummary.isRoundEnd && (
+                  <div className="pt-4 border-t border-gray-700">
+                    <div className="text-textMuted">
                       <strong>{turnSummary.roundWinnerText}</strong> won this round!
-                    </p>
-                    <p>
-                      The next round will start in: <strong>{turnSummary.countdown}</strong>
-                    </p>
-                  </>
-                )
-              : (
-                  <>
-                    <p>
-                      The correct answer was: <strong>{turnSummary.solution}</strong>
-                    </p>
-                    <p>
-                      <strong>{turnSummary.correctGuessersText}</strong> guessed correctly
-                    </p>
-                    <p>
-                      The next turn will start in: <strong>{turnSummary.countdown}</strong>
-                    </p>
-                  </>
-                )
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Countdown section at bottom */}
+              <div className="w-full">
+                <div className="text-lg text-textMuted mb-2">
+                  Next {turnSummary.isRoundEnd ? "round" : "turn"} in:
+                </div>
+                <div className="text-8xl font-bold text-accent text-center">
+                  {turnSummary.countdown}
+                </div>
+              </div>
+            </div>
           }
-          icon={beeImage}
+          icon={undefined}
         />
       )}
 
