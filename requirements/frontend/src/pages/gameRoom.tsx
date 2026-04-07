@@ -84,8 +84,8 @@ export default function GamePage() {
     players.filter((player, index, list) =>
       list.findIndex((candidate) => candidate.userId === player.userId) === index
     );
-
-  // 1. get userId from storage
+  
+  // Get saved user data from storage
   const user = useSessionStore((s) => s.user);
   const logout = useSessionStore((s) => s.logout);
   const clearRoom = useSessionStore((s) => s.clearRoom);
