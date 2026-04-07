@@ -25,6 +25,7 @@ type TurnSummary = {
   countdown: number;
 };
 
+// Checks which players joined or left by comparing the old and new lists
 function getJoinedAndLeftPlayers(previousMembers: RoomPlayer[], currentMembers: RoomPlayer[]) {
   const previousIds = new Set(previousMembers.map((member) => member.userId));
   const currentIds = new Set(currentMembers.map((member) => member.userId));
@@ -74,22 +75,23 @@ function formatNames(names: string[]): string {
 const START_COUNTDOWN_MS = 3000; // 3 second "Get Ready" popup
 
 export default function GamePage() {
-  const navigate = useNavigate();
-  // safety function to remove duplicate players from the list
+  const navigate = useNavigate(); // Function to navigate to different pages
+  // Remove duplicate players from the list
   const dedupePlayers = (players: TurnInfoPayload["players"]) =>
     players.filter((player, index, list) =>
       list.findIndex((candidate) => candidate.userId === player.userId) === index
     );
   
-  // 1. get userId from storage
+  // Get saved user data from storage
   const user = useSessionStore((s) => s.user);
   const logout = useSessionStore((s) => s.logout);
   const clearRoom = useSessionStore((s) => s.clearRoom);
-  const userId = user?.id; // use user id from storage
+  const userId = user?.id; // Use the user ID from storage
   if (!userId) {
     return <div>No user found</div>; // handle an error
   }
 
+  // Store values that trigger re-renders when changed
   const [wsState, setWsState] = useState<"connecting" | "waiting" | "playing" | "full" | "finished" | "error">("connecting");  
   const [members, setMembers] = useState<TurnInfoPayload["players"]>([]);
   const [drawerId, setDrawerId] = useState<number>(-1);
@@ -103,6 +105,7 @@ export default function GamePage() {
   const [clockRunning, setClockRunning] = useState<boolean>(false);
   const [turnSummary, setTurnSummary] = useState<TurnSummary | null>(null);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  // Store values that DON'T cause re-renders when changed (useful for tracking previous values)
   const pendingNavigationRef = useRef<(() => void) | null>(null);
   const isGameNavigatingRef = useRef(false);
   const prevWsStateRef = useRef<typeof wsState>("connecting");
@@ -129,7 +132,7 @@ export default function GamePage() {
     }
   }, [recentlyCorrectGuesser]);
 
-  // Block navigation when game is active
+  // Block navigation and show confirmation dialog when user tries to leave during game
   useBlocker(({ nextLocation }) => {
     if (isGameNavigatingRef.current) {
       return false;
@@ -142,6 +145,7 @@ export default function GamePage() {
     return false;
   });
 
+  // Skip on first render, then track member changes to show join/leave messages
   useEffect(() => {
     if (!membersInitializedRef.current) {
       prevMembersRef.current = members;
@@ -149,6 +153,7 @@ export default function GamePage() {
       return;
     }
 
+    // Calculate new messages from member changes without storing separately
     const previousMembers = prevMembersRef.current;
     const { joined, left } = getJoinedAndLeftPlayers(previousMembers, members);
     const nextMessages = createPresenceMessages(joined, left);
@@ -160,7 +165,9 @@ export default function GamePage() {
     prevMembersRef.current = members;
   }, [members]);
 
+  // Main effect to handle WebSocket connection and events
   useEffect(() => {
+    // Define cleanup functions for each event listener
     let unsubTurnInfo = () => {};
     let unsubRoomFull = () => {};
     let unsubStartGame = () => {};
@@ -174,6 +181,7 @@ export default function GamePage() {
       }
     };
 
+    // Self-running async function to connect to the game server
     (async () => {
       try {
         setWsState("connecting");
@@ -185,7 +193,7 @@ export default function GamePage() {
           logout();
         }, 8000);
 
-        // 2. subscribe to BE pushes before joinRoom so we don't miss the first turnInfo event
+        // Listen for game events from the server
         unsubTurnInfo = onTurnInfo((payload) => {
           console.log("[wss] turnInfo:", payload);
           clearConnectTimeout();
@@ -305,7 +313,7 @@ export default function GamePage() {
           }
         });
 
-        // 3. handle joinRoom
+        // Connect to the game server
         await joinRoom(userId);
         console.log("[gameRoom] joinRoom successful");
       } catch (e) {
@@ -315,6 +323,7 @@ export default function GamePage() {
       }
     })();
 
+    // Clean up: unsubscribe from events and disconnect when component leaves
     return () => {
       clearConnectTimeout();
       unsubTurnInfo();
@@ -323,13 +332,15 @@ export default function GamePage() {
       unsubResults();
       socket.disconnect();
     };
+    // Re-run this when user or route changes
   }, [userId, logout, navigate, clearRoom]);
 
-  // countdown before play 
+  // Start the countdown when game state changes to playing
   useEffect(() => {
     let countdownInterval: number | undefined;
     const prevState = prevWsStateRef.current;
 
+    // Only start countdown when transitioning to playing state
     if (wsState === "playing" && prevState !== "playing") {
       setStartCountdown(3);
       countdownInterval = window.setInterval(() => {
@@ -359,9 +370,10 @@ export default function GamePage() {
     };
   }, [wsState]);
 
-// Clock should be visually paused during any blocking popup state
+// Calculate whether the clock should tick based on multiple conditions
 const clockShouldTick = clockRunning && startCountdown === null && turnSummary === null;
 
+// Update the timer every 250ms while the game is playing
 useEffect(() => {
   if (!clockShouldTick) return;
 
@@ -378,8 +390,10 @@ useEffect(() => {
   return () => {
     window.clearInterval(interval);
   };
-}, [clockShouldTick]); // <-- was [clockRunning]
+  // Only re-run when clockShouldTick changes
+}, [clockShouldTick]);
 
+  // Update the turn summary countdown every second
   useEffect(() => {
     if (!turnSummary) return;
 
@@ -399,6 +413,7 @@ useEffect(() => {
     };
   }, [turnSummary]);
 
+  // Pass state values down to child components
   return (
     <RoomLayout
       highlightedPlayerId={recentlyCorrectGuesser}
@@ -408,7 +423,7 @@ useEffect(() => {
       clockRunning={clockRunning}
     >
 
-		{/* Debugging stuff: feel free to delete or change */}
+		{/* Show/hide components based on conditions (debugging section) */}
 		{/* <div className="absolute top-50 left-50 z-10 max-w-sm bg-white/90 rounded p-3 text-xs space-y-2">
           <div className="font-semibold">Debugging information:</div>
           <div>wsState: {wsState}</div>
@@ -417,6 +432,7 @@ useEffect(() => {
 		  <div>whoIam: id:{userId} name:{user?.username} </div>
           </div> */}
 
+    {/* Show component only if the condition is true */}
     {wsState === "connecting" && (
       <Lobby 
         title="Connecting..."
@@ -450,10 +466,13 @@ useEffect(() => {
         <DrawingBoard systemMessages={systemMessages} players={members} />
       )}
 
+      {/* Fragment (<>) allows multiple elements without adding an extra div */}
       {wsState === "playing" && (
         <>
+          {/* Show prompt only if there is a drawer assigned */}
           {(drawerId === userId || drawerId !== -1) && (
             <div className="absolute top-8 left-8 z-10 max-w-sm">
+              {/* Show different content depending on whether user is the drawer or guesser */}
               <PromptBox
                 isDrawer={drawerId === userId}
                 title={drawerId === userId ? "Your prompt" : "Guess the word"}
@@ -475,6 +494,7 @@ useEffect(() => {
         </>
       )}
 
+      {/* Show overlay that blocks interaction until dismissed */}
       {wsState === "playing" && turnSummary !== null && (
         <Lobby
           title={turnSummary.isRoundEnd ? "Round Over" : "Turn Over"}
@@ -514,6 +534,7 @@ useEffect(() => {
         />
       )}
 
+      {/* Show countdown only if game is starting and user is playing (not spectating) */}
       {wsState === "playing" && startCountdown !== null && !isSpectator && (
         <Lobby 
           title="Get Ready" 
@@ -521,6 +542,7 @@ useEffect(() => {
           icon={rocketImage}/>
       )}
 
+      {/* Pass function to child component to handle navigation confirmation */}
       {showLeaveConfirm && (
         <ConfirmLeaveDialog
           onConfirm={() => {
