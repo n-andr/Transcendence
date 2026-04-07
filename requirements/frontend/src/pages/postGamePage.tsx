@@ -37,6 +37,8 @@ export default function PostGamePage() {
 
   const scoredPlayers = summary?.players ?? [];
   const sortedPlayers = [...scoredPlayers].sort((a, b) => b.score - a.score);
+  // Find the highest score to highlight all players with that score
+  const topScore = sortedPlayers.length > 0 ? sortedPlayers[0].score : 0;
 
   console.log("[postGame] summary:", summary);
   console.log("[postGame] scoredPlayers:", scoredPlayers);
@@ -71,31 +73,34 @@ export default function PostGamePage() {
                 <h2 className="text-lg font-semibold mb-3 text-textPrimary">Scoreboard</h2>
                 {sortedPlayers.length > 0 ? (
                   <div className="space-y-2">
-                    {sortedPlayers.map((player, index) => (
-                      <div
-                        key={player.userId}
-                        className={`px-4 py-2 rounded-md flex items-center justify-between ${
-                          index === 0
-                            ? "bg-amber-100 border border-amber-300"
-                            : "bg-gray-50 border border-gray-200"
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="font-semibold text-lg w-6">
-                            {index + 1}.
-                          </span>
-                          <span className="text-textPrimary font-medium">
-                            {player.nickname}
-                          </span>
+                    {sortedPlayers.map((player, index) => {
+                      const isWinner = player.score === topScore;
+                      return (
+                        <div
+                          key={player.userId}
+                          className={`px-4 py-2 rounded-md flex items-center justify-between ${
+                            isWinner
+                              ? "bg-amber-100 border border-amber-300"
+                              : "bg-gray-50 border border-gray-200"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="font-semibold text-lg w-6">
+                              {index + 1}.
+                            </span>
+                            <span className="text-textPrimary font-medium">
+                              {player.nickname}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-textPrimary font-semibold">
+                              {player.score}
+                            </span>
+                            {isWinner && <span className="text-xl">👑</span>}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-textPrimary font-semibold">
-                            {player.score}
-                          </span>
-                          {index === 0 && <span className="text-xl">👑</span>}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-textMuted">No player data available</p>

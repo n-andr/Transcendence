@@ -33,8 +33,8 @@ async function main() {
     "bear", "elephant", "giraffe", "zebra", "monkey",
 
     "bread", "cheese", "egg", "milk", "juice", "coffee", "tea",
-    "burger", "fries", "hot dog", "sandwich", "noodles",
-    "rice", "soup", "salad", "cookie", "ice cream",
+    "burger", "fries", "sandwich", "noodles",
+    "rice", "soup", "salad", "cookie",
 
     "school", "teacher", "student", "classroom", "desk",
     "chalk", "board", "homework", "test", "pencil", "pen",
