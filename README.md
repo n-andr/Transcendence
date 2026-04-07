@@ -67,7 +67,38 @@ This command:
 
 ## Database Scheme
 
-TODO
+The backend uses **PostgreSQL** with **Prisma ORM**.  
+The current schema is intentionally minimal and focused on authentication and game word storage.
+
+### Models
+
+| Model | Fields | Purpose |
+| --- | --- | --- |
+| `User` | `id`, `nickname`, `email`, `password`, `friends` | Stores user account and login-related data |
+| `Word` | `id`, `text` | Stores unique words used by the drawing/guessing game |
+
+### Prisma schema summary
+
+- `User.id` → primary key (`Int`, auto-increment)
+- `User.nickname` → unique
+- `User.email` → unique
+- `User.password` → hashed password string
+- `User.friends` → `Int[]` list of user IDs (simple friend reference list)
+
+- `Word.id` → primary key (`Int`, auto-increment)
+- `Word.text` → unique word value
+
+### Constraints and integrity rules
+
+- Unique constraints prevent duplicate users by `nickname` or `email`.
+- Unique constraint on `Word.text` prevents duplicate words.
+- At this stage, there are **no explicit relational foreign keys** between models in Prisma (the `friends` field is stored as an integer array).
+
+### Source of truth
+
+The authoritative database definition is:
+
+`requirements/backend/prisma/schema.prisma`
 
 ---
 
@@ -144,7 +175,7 @@ The following list reflects the implemented project scope and ownership.
 
 ### lde-taey:
 
-- Project owner
+- Project owner: created a visual game flow and user story on Figma, created a list of features for the MVP, tested the app with family and friends to gather feedback about the UI experience that helped improve screen clarity, usability, and overall game flow
 - Frontend developer: focused on UI components, layout, lobby management, and event flow integration with backend (clock, scoreboard, guess updates in the chat)
 
 ### mrodenbu
@@ -165,9 +196,6 @@ The following list reflects the implemented project scope and ownership.
 
 - Backend developer
 - Database & Prisma
-  
-TO DO: we need a more detailed breakdown of what each team member contributed.
-we should also mention specific features, modules, or components implemented by each person 
 
 
 ---
@@ -176,9 +204,10 @@ we should also mention specific features, modules, or components implemented by 
 
 | Team member | Role | Responsibilities |
 | --- | --- | --- |
-| mrodenbu, nboer, sgramsch | Developer | Implementation and feature development |
-| lde-taey | Project Owner | Defines product vision, prioritizes features, considers user needs, evaluation organization |
+| lde-taey, mrodenbu, nandreev, nboer, sgramsch | Developer | Implementation and feature development |
+| lde-taey | Product Owner | Defines product vision, prioritizes features, considers user needs, evaluation organization |
 | nandreev | Tech Lead | Technical direction, architecture decisions, implementation guidance |
+| mrodenbu | Project Manager | Organization of the team, setting up meetings, time management |
 
 ---
 
@@ -212,6 +241,7 @@ we should also mention specific features, modules, or components implemented by 
 - Frontend/backend sync: it took us a while to sync both sides, agree on shared types, and clarify who owns which event/endpoint.
 - Deadline pressure: the original deadline of 31.1.26 was missed, as well as the second deadline of 5.3.26. We set these deadlines to force ourselves to work efficiently but it was still surprising that the work took longer than expected
 - Scope management: module selection required explicit effort/desirability trade-off analysis, with some features (e.g. full User Management) deprioritized due to complexity.
+- React 18 development mode caused some logic (for example code triggered from `useEffect`) to run twice because `StrictMode` intentionally re-runs it to detect unsafe side effects. This initially broke parts of our game loop during local development, so we added proper cleanup and guard logic to prevent duplicate initialization while keeping production behavior unchanged.
 
 ---
 
