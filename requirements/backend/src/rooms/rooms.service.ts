@@ -118,6 +118,7 @@ export class RoomsService {
 		{
 			const spectator = waitingPlayers.shift()!;
 			room.players.push(spectator);
+			room.spectators = room.spectators.filter(p => p.nickname !== spectator.nickname);
 		}
 		if (waitingPlayers.length > 0) //debug
 			console.log('Players filled, number of waiting players: ', waitingPlayers.length); //debug
