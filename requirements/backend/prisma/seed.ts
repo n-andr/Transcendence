@@ -22,7 +22,7 @@ async function main() {
     "ring", "necklace", "backpack", "wallet", "coin",
 
     "bus", "truck", "taxi", "subway", "scooter", "skateboard",
-    "traffic light", "road", "garage",
+    "road", "garage",
 
     "beach", "island", "desert", "forest", "jungle", "lake",
     "ocean", "waterfall", "volcano", "cave", "hill", "valley",
@@ -34,7 +34,7 @@ async function main() {
 
     "bread", "cheese", "egg", "milk", "juice", "coffee", "tea",
     "burger", "fries", "sandwich", "noodles",
-    "rice", "soup", "salad", "cookie",
+    "rice", "soup", "salad", "cookie", "unicorn",
 
     "school", "teacher", "student", "classroom", "desk",
     "chalk", "board", "homework", "test", "pencil", "pen",

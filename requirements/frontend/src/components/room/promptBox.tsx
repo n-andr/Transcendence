@@ -7,7 +7,7 @@ interface PromptBoxProps {
 }
 
 const PromptBox: React.FC<PromptBoxProps> = ({ prompt, title = "Your prompt", isDrawer = false }) => {
-  const drawerTitle = isDrawer ? "You're Drawing" : title;
+  const drawerTitle = isDrawer ? "You're drawing" : title;
   
   return (
     <div className={`bg-surface rounded-lg p-4 border ${
