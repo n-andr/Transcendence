@@ -163,13 +163,13 @@ export class WebsocketGateway {
 		@ConnectedSocket() client: Socket,
 		@MessageBody() payload: DrawPayload,
 	) {
-		console.log('[recv] stroke:start');
+		// console.log('[recv] stroke:start');
 		const socketRoom = 'room-' + payload.room_id;
 		const room = this.roomService.getRoom(payload.room_id);
 		if (!room) return;
 		if (client.data.userId != room.drawer) return;
 		// emit batch payload to the rooms clients
-		console.log('[send] stroke:start');
+		// console.log('[send] stroke:start');
 		client.to(socketRoom).emit(WS_EVENTS.STROKE_START, payload);
 
 		// add draw payload to the server?
