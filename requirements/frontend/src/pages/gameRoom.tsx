@@ -104,7 +104,8 @@ export default function GamePage() {
     return <div>No user found</div>; // handle an error
   }
 
-  const [wsState, setWsState] = useState<"connecting" | "waiting" | "playing" | "full" | "finished" | "error">("connecting");
+  // Store values that trigger re-renders when changed
+  const [wsState, setWsState] = useState<"connecting" | "waiting" | "playing" | "full" | "finished" | "error">("connecting");  
   const [members, setMembers] = useState<TurnInfoPayload["players"]>([]);
   const [spectators, setSpectators] = useState<TurnInfoPayload["spectators"]>([]);
   const [drawerId, setDrawerId] = useState<number>(-1);
